@@ -12,7 +12,7 @@ order: 3
 * Email :   <yoyus5@naver.com>
 * Github :  [github.com/ISSuh](https://github.com/ISSuh)
 <!-- * Resume : [KOR](/aboutme_kor/) / [ENG](/aboutme_en/) -->
-* Resume : [KOR](/aboutme_kor/)
+* Resume : [KOR](/aboutme/)
 
 > 더 나은 소프트웨어를 위해
 
