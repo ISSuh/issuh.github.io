@@ -1,0 +1,6 @@
+User-agent: *
+
+Allow: /
+Disallow: /private/
+
+Sitemap: https://issuh.github.io/sitemap.xml
