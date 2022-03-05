@@ -36,11 +36,11 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/tmethod.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/tmethod.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/tmeth007.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/tmeth007.gif)
 
 ### Elements
 

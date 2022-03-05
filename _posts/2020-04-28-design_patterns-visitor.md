@@ -42,15 +42,15 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visitor.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visitor.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit006.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit006.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit113.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit113.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit112.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit112.gif)
 
 ### Elements
 
@@ -85,7 +85,7 @@ tags:
 
 다음의 상호작용 다이어그램은 방문자 객체와 두 원소 사이의 협력 관계를 보여준다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit003.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/visit003.gif)
 
 ## Feature
 

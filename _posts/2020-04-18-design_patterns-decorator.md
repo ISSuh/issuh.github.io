@@ -37,15 +37,15 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor064.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor064.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor066.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor066.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor065.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor065.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor067.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/decor067.gif)
 
 ### Elements
 
@@ -115,12 +115,12 @@ tags:
 
 *Decorator Pattern*은 객체의 외관을 변경하는 것이므로, 구성요소는 자신을 둘러싼 *Decorator*에 대해서는 전혀 알 필요가 없다. 즉 *Decorator*는 구성요소에 대해 투명하다고 할 수 이다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/deco-069.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/deco-069.gif)
 
 *Strategy Pattern*은 *Decorator Pattern*과 반대로 객체의 내부를 변경하는 대표적인 패턴이다.
 *Component* 클래스가 본질적으로 매우 복잡하고 무거운 특성을 가진다면, *Strategy Pattern*이 더 나은 해결방안이다.  *Strategy Pattern*에서 구성요소는 자신이 받은 처리 요청을 분리된 *Strategy* 클래스에 전달한다. *Strategy* 객체의 대체를 통해서 구성요소의 기능성을 변경하거나 확작하는 방법을 제공한다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/deco-068.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/deco-068.gif)
 
 ### Implement Example
 

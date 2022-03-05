@@ -31,7 +31,7 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/singl014.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/singl014.gif)
 
 
 ### Elements

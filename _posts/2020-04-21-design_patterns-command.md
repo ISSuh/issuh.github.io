@@ -58,17 +58,17 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/command.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/command.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma081.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma081.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma078.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma078.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma080.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma080.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma079.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma079.gif)
 
 ### Elements
 
@@ -99,7 +99,7 @@ tags:
 
 다음 다이어그램은 협력자 사이의 상호작용을 보여준다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma077.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/comma077.gif)
 
 *Command* 객체로 요청 발생자(*Invoker*)가 요청 수신자에서 분리된다.  
 

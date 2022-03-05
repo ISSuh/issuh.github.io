@@ -36,13 +36,13 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state012.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state012.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state-eg.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/state-eg.gif)
 
 ### Elements
 

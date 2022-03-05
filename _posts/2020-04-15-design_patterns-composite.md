@@ -34,15 +34,15 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo072.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo072.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo073.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo073.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo075.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo075.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo074.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/compo074.gif)
 
 ### Elements
 

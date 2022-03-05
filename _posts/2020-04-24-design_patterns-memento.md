@@ -33,7 +33,7 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/memento.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/memento.gif)
 
 ### Elements
 
@@ -54,7 +54,7 @@ tags:
 
 *Caretaker* 객체는 원조본 객체에 *Memento* 객체를 요청한다. 또 요청한 시간을 저장하며, 받은 *Memento* 객체를 다시 원조본 객체에게 돌려주는데, 이를 상호작용 다이어그램으로 표현하면 다음과 같다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/memen027.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/memen027.gif)
 
 *Caretaker* 객체는 *Memento* 객체를 *Originator* 객체에 전달하지 않을 수 있다. *Originator* 객체가 이전 상태로 돌아갈 필요가 없을 때는 전달할 필요가 없기 때문이다.
 

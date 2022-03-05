@@ -41,11 +41,11 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strategy.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strategy.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strat011.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strat011.gif)
 
 ### Elements
 

@@ -40,7 +40,7 @@ tags:
 
 ### Diagram
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/build095.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/build095.gif)
 
 ## Feature
 

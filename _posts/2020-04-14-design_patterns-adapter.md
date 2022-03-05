@@ -34,15 +34,15 @@ tags:
 
 #### 클래스 적응자(Class Adapter) 활용
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt106.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt106.gif)
 
 #### 객체 적응자(Object Adapter) 활용
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt104.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt104.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt105.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt105.gif)
 
 ### Elements
 
@@ -73,7 +73,7 @@ tags:
 
 *Adapter*의 잠재적인 문제는 *Adapter*가 모든 사용자에게 투명하지 않다는 것이다. 적응된 객체는 더는 *Adaptee* 인터페이스를 만족하지 않는다. *Target*의 인터페이스를 만족하기 때문이다. 이렇게 되면 *Target*이 필요한 사용자는 적응된 클래스를 사용할 수 있지만, *Adaptee* 객체를 통해 *Target*을 사용해야 하는 사용자라면 적응된 객체를 사용할 수 없게 된다. 양방향 적을이 되려면 이런 상황에서 모두 지원해야 한다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt107.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/adapt107.gif)
 
 ### 클래스 적응자(Class Apdater)와 객체 적응자(Object Apdater)
 

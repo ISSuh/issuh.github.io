@@ -46,15 +46,15 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy017.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy017.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy015.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy015.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy016.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy016.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy-eg.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proxy-eg.gif)
 
 ### Elements
 

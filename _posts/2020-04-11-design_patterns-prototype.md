@@ -36,7 +36,7 @@ tags:
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proto019.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proto019.gif)
 
 ### Elements
 

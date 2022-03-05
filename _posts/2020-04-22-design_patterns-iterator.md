@@ -34,13 +34,13 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/iterator.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/iterator.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/itera039.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/itera039.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/itera040.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/itera040.gif)
 
 ### Elements
 

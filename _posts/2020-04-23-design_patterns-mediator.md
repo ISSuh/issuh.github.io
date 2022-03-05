@@ -35,19 +35,19 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/mediator.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/mediator.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media030.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media030.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fontc047.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fontc047.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media033.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media033.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media031.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media031.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media034.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/media034.gif)
 
 ### Elements
 

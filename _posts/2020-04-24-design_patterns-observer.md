@@ -35,11 +35,11 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/observer.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/observer.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser023.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser023.gif)
 
 ### Elements
 
@@ -64,7 +64,7 @@ tags:
 
 다음 다이어그램은 하나의 *Subject*와 두 *Observer* 사시의 협력관계를 표현한 것이다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser022.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser022.gif)
 
 *Notify()* 연산은 *Subject*로만 호출되는 것이 아니고, *Observer*나 다른 객체들로도 호출이 가능하다.
 
@@ -207,7 +207,7 @@ void Observer::Update(Subject*, Aspect& interest);
 
 다음의 다이어그램은 이 관련성 관리 객체(*ChageManager*)와 *Subject*, *Observer* 간의 관계도 이다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser025.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/obser025.gif)
 
 하나의 *ChageManager* 클래스가 여러 객체 간의 상태 변화를 총괄한다는 점에서 *ChageManager* 클래스는 일종의 *Mediator Pattern*의 예 이다. 일반적으로 이 *ChageManager* 클래스만 존재하므로, 이 클래스 객체는 전역적으로 *Singleton Pattern*을 통해 정의하는 것이 유용하다.
 

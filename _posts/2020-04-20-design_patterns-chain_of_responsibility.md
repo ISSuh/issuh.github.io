@@ -35,17 +35,17 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain094.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain094.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain089.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain089.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain090.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain090.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain091.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain091.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain092.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/chain092.gif)
 
 ### Elements
 

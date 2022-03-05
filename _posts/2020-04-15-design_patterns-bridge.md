@@ -38,11 +38,11 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/bridge.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/bridge.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/bridg100.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/bridg100.gif)
 
 ### Elements
 

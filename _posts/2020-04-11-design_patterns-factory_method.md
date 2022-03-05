@@ -36,7 +36,7 @@ tags:
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fmeth049.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fmeth049.gif)
 
 ### Elements
 
@@ -67,7 +67,7 @@ tags:
   - *병렬적 클래스 계통*은 클래스가 자신의 책임을 분리된 다른 클래스에 위임할때 발생한다.
   - 사용자와 상호작용을 구현하고 특정한 조작에 관련된 상태를 추적, 저장하는 별도의 *Manipulator* 객체를 사용하고, 서로 다른 *Manipulator* 클래스의 서브클래스를 사용하여 특정한 상호작용을 처리하도록 한다.
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fmeth048.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/fmeth048.gif)
 
 ## Implementation
 

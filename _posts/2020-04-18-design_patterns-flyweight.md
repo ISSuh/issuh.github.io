@@ -38,19 +38,19 @@ tags:
 
 ### Basic Structure
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe050.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe050.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe051.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe051.gif)
 
 ### Structure Example
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe055.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe055.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe054.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe054.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe052.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe052.gif)
 
-![example](http://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe053.gif)
+![example](https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/flywe053.gif)
 
 ### Elements
 
