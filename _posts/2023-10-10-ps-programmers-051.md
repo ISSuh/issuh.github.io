@@ -1,6 +1,6 @@
 ---
-title: Programmers - 최소직사각형
-date: 2023-10-09 10:05:00
+title: Programmers - 콜라 문제
+date: 2023-10-09 21:40:00
 categories: [Problem Solving, Programmers]
 published: true
 tags:
@@ -9,7 +9,7 @@ tags:
 - Math
 ---
 
-### [ 최소직사각형 ](https://school.programmers.co.kr/learn/courses/30/lessons/86491?language=java) - lv.1
+### [ 콜라 문제 ](https://school.programmers.co.kr/learn/courses/30/lessons/132267) - lv.1
 
 #### 문제
 오래전 유행했던 콜라 문제가 있습니다. 콜라 문제의 지문은 다음과 같습니다.
