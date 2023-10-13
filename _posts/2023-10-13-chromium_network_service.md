@@ -1,0 +1,21 @@
+---
+title: Chromium - Netowk
+date: 2023-10-13 22:58:00 +0900
+published: true
+categories:
+- Chromium
+tags:
+- Chromium
+---
+
+# Chromium의 Network Service
+
+## Network Process(Utility Process) Class Diagram
+![Alt text](http://www.plantuml.com/plantuml/svg/fPNXRfim4CU_trDO-R944o-0egfgfwcRehLArWTmpBLZCJYpdNRHrdSV5YU4uN29bWzjmB_xtu7XbsldfVMdIiDHgeDyHh6uiURLeHKFrYXqRY7MwzeKU7Kb_e1eFcNjqJv9XQ96_shi8SyhyzDKUVwutMoCBD1-QnTsQ5zAXVTxrtn1I_Ll0E6Vqj8v4PEtkiJQTrn3TbCz-bAN_YnegYKL2gfSNJ1ct9ETYYVcvTwQXlZjsLoUc7jRFqlbZJrpoRV6kZaSprmm0njgTN9nYxzEwAQkjqVa-IVK-2mzJinEt5Up7yuV_awnwJ3QZJHqv_sHakZpyRxUUMcRykgeqMEnB6ilBBgJzYl-GaF8Tojh9vKlJPtOfa3ImxAHv-Z6fXBVYU989d3dBSfg8ejMqriw0DCxIxatqfKgQart-KxMXViX3zXir5DfAooMgsH4eacR_o2jun_MLa0xemxeGryz-VAtIItPdvU6x8PUAgdrlh7OQY9djw4GPfncaIQQYtofZlgYSTxWWzYJyO-jM-5Ihw__PXbhScZ2JoHk2XTBIXUEp0rfFtFfa5OlbKJd00QnMNOrHEB3G8ny2V2kdKDpriV0dVolBgCwDhtJSoAMyZgISpB3K35reGg0iLm3mUkFXrdP0yHQpsm4Kdblzd5IVt6TPV5Y74-NE_m90E2leyM7uXx28wgt1WbhpgmZBDOf05ydQ4-YbhDO67IWrPw00KOtRlm40CH5z9J4ccOOHjCC5IaQe7T4WkZK2_ID5ePEXVYO84QyGNVXnH9miK8NWSlpBIeiNt2nRkRlJbN6uwBttbrZNPmg_Gy0)
+
+## TLS Handshaking Sequence
+![Alt text](http://www.plantuml.com/plantuml/svg/dPB1Rl8m48JlVWgB4np-5-3m2nKEKA4AaNAEDcOBgzZhTBrGsgTl8aZLA2a7hZlpZTOxdYK5qLFmLdtAZy3xT8GISqRzY5BcA18bJ_X-GdPeJ14lThHJygIVTYFHOKhZbwlPPYXdSZWPcGf4oL45h7QtNMyRFkbIjNgEHKTjPZV-LO0JEAN8FSiJ97AP2aBeQTVn1YIXTCGiMyyz8MiMNOcw2fKto7jRn8inlRNil_-sFvpQJ47qrsuhLXG6Fvmm_9usnWpBTq710oMr3hmlm9MMs0OC1OezWn0K7Xz9NSHrZDLZv8f9RrtSuRkjrM234NZwmXRkMcggrsUDpIE_aOHb-pV7xIKcfkUk4mPAlnzYXeW_WnRn9wCvu31SqrFR-BBQHtmmPeQyFmN_3G00)
+
+---
+> https://www.chromium.org/developers/design-documents/network-stack/
+> https://docs.google.com/document/d/1wAHLw9h7gGuqJNCgG1mP1BmLtCGfZ2pys-PdZQ1vg7M/edit?pref=2&pli=1#heading=h.7001qjw7yymp
