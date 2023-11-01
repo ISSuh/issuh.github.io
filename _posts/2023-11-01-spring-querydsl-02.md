@@ -1,7 +1,7 @@
 ---
 title: QueryDsl - 중급 문법
 date: 2023-11-01 14:30:00 +0900
-categories: [Web, Spring Framework]
+categories: [Web, Spring Framework, QueryDsl]
 published: true
 tags:
 - Web
