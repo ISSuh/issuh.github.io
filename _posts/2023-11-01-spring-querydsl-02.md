@@ -1,14 +1,14 @@
 ---
-title: QueryDsl - 중급 문법
+title: QueryDSL - 중급 문법
 date: 2023-11-01 14:30:00 +0900
-categories: [Web, Spring Framework, QueryDsl]
+categories: [Backend, QueryDSL]
 published: true
 tags:
 - Web
 - Spring Framework
 - DataBase
 - JPA
-- Querydsl
+- QueryDSL
 ---
 
 ### 프로젝션과 결과 반환 - 기본 

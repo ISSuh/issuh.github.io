@@ -1,7 +1,7 @@
 ---
 title: Spring Data JPA - 스프링 데이터 JPA 구현체 분석
 date: 2023-10-31 16:10:00 +0900
-categories: [Web, Spring Framework]
+categories: [Backend, JPA]
 published: true
 tags:
 - Web

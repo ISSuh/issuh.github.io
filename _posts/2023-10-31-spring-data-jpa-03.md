@@ -1,7 +1,7 @@
 ---
 title: Spring Data JPA - 확장 기능
 date: 2023-10-31 14:10:00 +0900
-categories: [Web, Spring Framework]
+categories: [Backend, JPA]
 published: true
 tags:
 - Web

@@ -1,7 +1,7 @@
 ---
 title: Spring Data JPA - 쿼리 메소드 기능
 date: 2023-10-30 17:50:00 +0900
-categories: [Web, Spring Framework]
+categories: [Backend, JPA]
 published: true
 tags:
 - Web

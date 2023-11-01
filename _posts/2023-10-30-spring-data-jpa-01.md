@@ -1,7 +1,7 @@
 ---
 title: Spring Data JPA - 공통 인터페이스 기능
 date: 2023-10-30 17:00:00 +0900
-categories: [Web, Spring Framework]
+categories: [Backend, JPA]
 published: true
 tags:
 - Web

@@ -1,14 +1,14 @@
 ---
-title: QueryDsl - 기본 문법
+title: QueryDSL - 기본 문법
 date: 2023-11-01 10:40:00 +0900
-categories: [Web, Spring Framework]
+categories: [Backend, QueryDSL]
 published: true
 tags:
 - Web
 - Spring Framework
 - DataBase
 - JPA
-- Querydsl
+- QueryDSL
 ---
 
 ### 기본 QTypq 활용
