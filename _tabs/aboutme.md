@@ -11,6 +11,6 @@ order: 3
 - 서인석 (InSeock Suh)
 - Email : <yoyus5@naver.com>
 - Github : [github.com/ISSuh](https://github.com/ISSuh)
-- Resume : [KOR](/posts/experience_kor) / [ENG](/posts/experience_en)
+- Resume : [KOR](https://issuh.github.io/resume/)
 
 > For better Software
