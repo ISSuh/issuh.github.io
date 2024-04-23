@@ -4,22 +4,23 @@ date: 2023-10-31 16:10:00 +0900
 categories: [Backend, JPA]
 published: true
 tags:
-- Web
-- Spring Framework
-- DataBase
-- JPA
-- Spring Data JPA
+  - Web
+  - Spring Framework
+  - DataBase
+  - JPA
+  - Spring Data JPA
 ---
 
 ### 스프링 데이터 JPA 구현체 분석
-  - 스프링 데이터 JPA가 제공하는 공통 인터페이스의 구현체
-    - org.springframework.data.jpa.repository.support.SimpleJpaRepository
+
+- 스프링 데이터 JPA가 제공하는 공통 인터페이스의 구현체
+  - org.springframework.data.jpa.repository.support.SimpleJpaRepository
 
 ```java
 @Repository
 @Transactional(readOnly = true)
 public class SimpleJpaRepository<T, ID> ...{
-    
+
   @Transactional
   public <S extends T> S save(S entity) {
     if (entityInformation.isNew(entity)) {
@@ -32,26 +33,28 @@ public class SimpleJpaRepository<T, ID> ...{
     ...
 }
 ```
-  - @Repository 적용
-    - JPA 예외를 스프링이 추상화한 예외로 변환
-  - @Transactional 적용
-    - JPA의 모든 변경은 트랜잭션 안에서 동작
-    - 스프링 데이터 JPA는 변경(등록, 수정, 삭제) 메소드를 트랜잭션 처리
-    - 서비스 계층에서 트랜잭션을 시작하지 않으면 리포지토리에서 트랜잭션 시작
-    - 서비스 계층에서 트랜잭션을 시작하면 리포지토리는 해당 트랜잭션을 전파 받아서 사용
-  - 클래스에 @Transactional(readOnly = true) 적용
-    - 데이터를 단순히 조회만 하고 변경하지 않는 트랜잭션에서 readOnly = true 옵션을 사용하면,
+
+- @Repository 적용
+  - JPA 예외를 스프링이 추상화한 예외로 변환
+- @Transactional 적용
+  - JPA의 모든 변경은 트랜잭션 안에서 동작
+  - 스프링 데이터 JPA는 변경(등록, 수정, 삭제) 메소드를 트랜잭션 처리
+  - 서비스 계층에서 트랜잭션을 시작하지 않으면 리포지토리에서 트랜잭션 시작
+  - 서비스 계층에서 트랜잭션을 시작하면 리포지토리는 해당 트랜잭션을 전파 받아서 사용
+- 클래스에 @Transactional(readOnly = true) 적용
+  - 데이터를 단순히 조회만 하고 변경하지 않는 트랜잭션에서 readOnly = true 옵션을 사용하면,
     내부적으로 flush를 생략하기 떄문에 약간의 성능향상을 얻을 수 있음
-  - **save 메소드**
-    - **새로운 엔티티면 저장(persist())**
-    - **새로운 엔티티가 아니면 병합(merge())**
-      - 병합은 엔티티의 값을 강제로 엎어 적용하는 것이기 떄문에 의도치 않게 값이 null이 될수도 있음
+- **save 메소드**
+  - **새로운 엔티티면 저장(persist())**
+  - **새로운 엔티티가 아니면 병합(merge())**
+    - 병합은 엔티티의 값을 강제로 엎어 적용하는 것이기 떄문에 의도치 않게 값이 null이 될수도 있음
 
 ### 새로운 엔티티를 구별하는 방법
-  - 새로운 엔티티를 판단하는 기본 전략
-    - 식별자가 객체일떄는 null 인지 판단
-    - 식별자가 자바 기본 타입일때는 0으로 판단
-    - Persistable 인터페이스를 구현해서 판단 로직 변경 가능
+
+- 새로운 엔티티를 판단하는 기본 전략
+  - 식별자가 객체일떄는 null 인지 판단
+  - 식별자가 자바 기본 타입일때는 0으로 판단
+  - Persistable 인터페이스를 구현해서 판단 로직 변경 가능
 
 ```java
 package org.springframework.data.domain;
@@ -77,10 +80,10 @@ merge()는 우선 데이터베이스를 호출하여 값을 확인하고, 데이
 public class Item implements Persistable<String> {
   @Id
   private String id;
-  
+
   @CreatedDate
   private LocalDateTime createdDate;
-  
+
   public Item(String id) {
     this.id = id;
   }
@@ -98,5 +101,7 @@ public class Item implements Persistable<String> {
 ```
 
 ---
-참고 
- - 실전! 스프링 데이터 JPA(김영한)
+
+참고
+
+- 실전! 스프링 데이터 JPA(김영한)

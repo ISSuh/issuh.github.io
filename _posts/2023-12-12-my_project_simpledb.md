@@ -15,7 +15,7 @@ tags:
 
 여기서 LSM-tree 기반 storage를 구현하던 중 L0에 해당하는 메모리 영역에 데이터를 저장하기 위한 구조가 필요했었다.
 
-![](https://d3i71xaburhd42.cloudfront.net/63c1a337908cf35784ad682e5c7d946f225bddc5/2-Figure1-1.png) 
+![](https://d3i71xaburhd42.cloudfront.net/63c1a337908cf35784ad682e5c7d946f225bddc5/2-Figure1-1.png)
 
 <br></br>
 
@@ -25,7 +25,7 @@ tags:
 
 위키에 skiplist를 검색하여 어떤건지 설명을 보면 아래와 같다.
 
-> In computer science, a skip list (or skiplist) is a probabilistic data structure that allows O(log n) average complexity for search as well as O(log n) average complexity for insertion within an ordered sequence of n elements. 
+> In computer science, a skip list (or skiplist) is a probabilistic data structure that allows O(log n) average complexity for search as well as O(log n) average complexity for insertion within an ordered sequence of n elements.
 
 즉, skiplist는 linkedlist, tree와 같은 일종의 데이터구조의 한 종류로, 조회, 삽입의 시간복잡도가 O(log n)으로 예상되는 **정렬된** **확률적** 데이터구조이다.
 
@@ -36,8 +36,6 @@ tags:
 skiplist는 기본적으로 여러 level이 존재하고 이 level은 linklist와 유사한 구조로 여러 node를 포함할 수 있도록 되어있다.
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Skip_list.svg/400px-Skip_list.svg.png)
-
-
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Skip_list_add_element-en.gif/400px-Skip_list_add_element-en.gif)
 
@@ -63,7 +61,7 @@ repeat
 ```go
 type SkipList struct {
   // skiplist의 maxk level
-  maxLevel int            
+  maxLevel int
 
   // 저장된 item 의 수
   length   int
@@ -86,5 +84,7 @@ type SkipList struct {
 ```
 
 ---
+
 참고
- - https://en.wikipedia.org/wiki/Skip_list
+
+- https://en.wikipedia.org/wiki/Skip_list
