@@ -1,11 +1,11 @@
 ---
-title: [my project][simpleDB] 메모리 
+title: simpleDB - 메모리
 date: 2023-11-08 12:00:00 +0900
 categories: [MyProject, simpleDB]
 published: false
 tags:
-- simpleDB
-- skiplist
+  - simpleDB
+  - skiplist
 ---
 
 # SkipList
