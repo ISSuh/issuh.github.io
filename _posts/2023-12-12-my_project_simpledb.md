@@ -17,8 +17,6 @@ tags:
 
 ![](https://d3i71xaburhd42.cloudfront.net/63c1a337908cf35784ad682e5c7d946f225bddc5/2-Figure1-1.png)
 
-<br></br>
-
 처음엔 단순히 map을 사용하여 메모리 영역인 L0을 구현했는데, 이왕 프로젝트 진행하는데 map은 너무 심심하다고 생각되어 적당한 데이터 구조가 없는지 여러 레퍼런스를 찾던도중 skiplist 가 적당할 것 같아 선택하게 되었다.
 
 ## SkipList 란?
