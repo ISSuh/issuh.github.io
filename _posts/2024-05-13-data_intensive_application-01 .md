@@ -2,7 +2,7 @@
 title: Data Intensive Application - 신뢰할 수 있고 확장 가능하며 유지보수하기 쉬운 어플리케이션
 date: 2024-05-13 22:27:00 +0900
 categories: [Books, Data Intensive Application]
-published: true
+published: false
 tags:
   - Books
   - Data Intensive Application
