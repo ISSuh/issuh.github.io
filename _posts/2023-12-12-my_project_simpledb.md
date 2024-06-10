@@ -1,7 +1,7 @@
 ---
 title: simpleDB - 메모리
 date: 2023-11-08 12:00:00 +0900
-categories: [MyProject, simpleDB]
+categories: [Project, simpleDB]
 published: false
 tags:
   - simpleDB
