@@ -1,6 +1,6 @@
 ---
 title: Programmers - 이진 변환 반복하기
-date: 2024-05-16 23:20:00
+date: 2024-05-16 23:20:00 +0900
 categories: [Problem Solving, Programmers]
 published: true
 tags:

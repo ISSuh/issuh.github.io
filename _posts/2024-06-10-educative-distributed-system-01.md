@@ -1,6 +1,6 @@
 ---
 title: Distributed Systems - 분산 시스템 소개
-date: 2024-06-10 22:02:00
+date: 2024-06-10 22:02:00 +0900
 categories: [System Design, Distributed Systems]
 published: true
 tags:

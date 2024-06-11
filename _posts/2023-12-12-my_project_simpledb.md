@@ -4,7 +4,7 @@ date: 2023-11-08 12:00:00 +0900
 categories: [Project, simpleDB]
 published: false
 tags:
-  - simpleDB
+  - project
   - skiplist
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: HackerRandk - Fraudulent Activity Notifications
-date: 2023-12-22 18:19:00
+date: 2023-12-22 18:19:00 +0900
 categories: [Problem Solving, HackerRandk]
 tags:
   - PS
