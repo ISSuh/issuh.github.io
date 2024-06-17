@@ -1,5 +1,5 @@
 ---
-title: Distributed Systems - Coordination Patterns\
+title: Distributed Systems - Coordination Patterns
 date: 2024-06-17 22:31:00 +0900
 categories: [System Design, Distributed Systems]
 published: true
