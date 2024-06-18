@@ -1,0 +1,1260 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="JPA - 컬렉션 조회 최적화" /><meta property="og:locale" content="en" /><meta name="description" content="OneToMany 관계에서의 성능 최적화 예시를 위해 간단한 주문조회 API 컨트롤러와 엔티티를 구현하고 단계별로 어떻게 최적화 하는지 확인" /><meta property="og:description" content="OneToMany 관계에서의 성능 최적화 예시를 위해 간단한 주문조회 API 컨트롤러와 엔티티를 구현하고 단계별로 어떻게 최적화 하는지 확인" /><link rel="canonical" href="https://issuh.github.io/posts/spring-jpa-13/" /><meta property="og:url" content="https://issuh.github.io/posts/spring-jpa-13/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2023-10-27T14:00:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="JPA - 컬렉션 조회 최적화" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-04-23T22:54:02+09:00","datePublished":"2023-10-27T14:00:00+09:00","description":"OneToMany 관계에서의 성능 최적화 예시를 위해 간단한 주문조회 API 컨트롤러와 엔티티를 구현하고 단계별로 어떻게 최적화 하는지 확인","headline":"JPA - 컬렉션 조회 최적화","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/spring-jpa-13/"},"url":"https://issuh.github.io/posts/spring-jpa-13/"}</script><title>JPA - 컬렉션 조회 최적화 | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>JPA - 컬렉션 조회 최적화</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>JPA - 컬렉션 조회 최적화</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1698382800" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2023-10-27 </em> </span> <span> Updated <em class="timeago" data-ts="1713880442" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2024-04-23 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="5875 words"> <em>32 min</em> read</span></div></div></div><div class="post-content"><p>OneToMany 관계에서의 성능 최적화 예시를 위해 간단한 주문조회 API 컨트롤러와 엔티티를 구현하고 단계별로 어떻게 최적화 하는지 확인</p><h4 id="엔티티-예시"><span class="mr-2">엔티티 예시</span><a href="#엔티티-예시" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><img data-src="http://www.plantuml.com/plantuml/png/LOz1ImGn38Nl_HLXZe4zUDtJ7jQ3eAZu2-eqhC5fAvrKMCJ_RX9sg7EPIJvUtdizhHARzBo4S5-4vGhFBL63dm30IJ-PyhlkHtZoGGbYDSc3K5wLF_8gYCeJBVnDxQhiV1kLklOS9HgEGeeqKhgTUjIRR-5tNy3SHmb4jlq8XX57YSt4cPENnhE5pBKN-UUwDomnc-ZBnEh1HRnNdJzVU_G3iuX2bzgOjcUQdSV1T3V1eV7bGmumuJGwXz7U-AOnlS4GJbHIpxVVyWS0" alt="example" data-proofer-ignore></p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre><td class="rouge-code"><pre><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="o">{</span>
+  <span class="nd">@Id</span>
+  <span class="nd">@GeneratedValue</span>
+  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"order_id"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+
+  <span class="nd">@OneToMany</span><span class="o">(</span><span class="n">mappedBy</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span> <span class="n">cascade</span> <span class="o">=</span> <span class="nc">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItem</span><span class="o">&gt;</span> <span class="n">orderItems</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+  <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderItem</span> <span class="o">{</span>
+
+  <span class="nd">@Id</span>
+  <span class="nd">@GeneratedValue</span>
+  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"order_item_id"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="nc">Id</span><span class="o">;</span>
+
+  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"item_id"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Item</span> <span class="n">item</span><span class="o">;</span>
+
+  <span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+  <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"order_id"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Order</span> <span class="n">order</span><span class="o">;</span>
+
+  <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Item</span> <span class="o">{</span>
+
+  <span class="nd">@Id</span>
+  <span class="nd">@GeneratedValue</span>
+  <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"item_id"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">price</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">stockQuantity</span><span class="o">;</span>
+
+  <span class="o">...</span>
+<span class="o">}</span>
+</pre></table></code></div></div><h3 id="주문조회-v1---엔티티-직접-노출"><span class="mr-2">주문조회 V1 - 엔티티 직접 노출</span><a href="#주문조회-v1---엔티티-직접-노출" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre><td class="rouge-code"><pre><span class="cm">/**
+ * V1. 엔티티 직접 노출
+ * - Hibernate5Module 모듈 등록, LAZY=null 처리
+ * - 양방향 관계 문제 발생 -&gt; @JsonIgnore
+ */</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v1/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">ordersV1</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderRepository</span><span class="o">.</span><span class="na">findAllByString</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderSearch</span><span class="o">());</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">Order</span> <span class="n">order</span> <span class="o">:</span> <span class="n">orders</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Lazy 강제 초기화</span>
+    <span class="n">order</span><span class="o">.</span><span class="na">getMember</span><span class="o">().</span><span class="na">getName</span><span class="o">();</span>
+
+    <span class="c1">// Lazy 강제 초기화</span>
+    <span class="n">order</span><span class="o">.</span><span class="na">getDelivery</span><span class="o">().</span><span class="na">getAddress</span><span class="o">();</span>
+
+    <span class="c1">// 컬렉션 내의 각 Item에 대하여 Lazy 강제 초기화</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItem</span><span class="o">&gt;</span> <span class="n">orderItems</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getOrderItems</span><span class="o">();</span>
+    <span class="n">orderItems</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span><span class="o">.</span><span class="na">getItem</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="n">orders</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></table></code></div></div><ul><li>orderItem, item 관계를 직접 초기화 하면 Hibernate5Module 설정에 의해 엔티티를 Json으로 생성함<li>양방향 연관관계면 무한 루프에 걸리지 않도록 한쪽에 @JsonIgnore를 추가해야 함<li>엔티티를 직접 노출하므로 좋은 방법이 아님</ul><h3 id="주문조회-v2---엔티티를-dto로-반환"><span class="mr-2">주문조회 V2 - 엔티티를 DTO로 반환</span><a href="#주문조회-v2---엔티티를-dto로-반환" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">OrderDto</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">orderId</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">LocalDateTime</span> <span class="n">orderDate</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">OrderStatus</span> <span class="n">orderStatus</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">Address</span> <span class="n">address</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemDto</span><span class="o">&gt;</span> <span class="n">orderItems</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">OrderDto</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">orderId</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">();</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getMember</span><span class="o">().</span><span class="na">getName</span><span class="o">();</span>
+    <span class="n">orderDate</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getOrderDate</span><span class="o">();</span>
+    <span class="n">orderStatus</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getStatus</span><span class="o">();</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getDelivery</span><span class="o">().</span><span class="na">getAddress</span><span class="o">();</span>
+    <span class="n">orderItems</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="na">getOrderItems</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                          <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">orderItem</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderItemDto</span><span class="o">(</span><span class="n">orderItem</span><span class="o">))</span>
+                          <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Data</span>
+<span class="kd">static</span> <span class="kd">class</span> <span class="nc">OrderItemDto</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">itemName</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">orderPrice</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">OrderItemDto</span><span class="o">(</span><span class="nc">OrderItem</span> <span class="n">orderItem</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">itemName</span> <span class="o">=</span> <span class="n">orderItem</span><span class="o">.</span><span class="na">getItem</span><span class="o">().</span><span class="na">getName</span><span class="o">();</span>
+    <span class="n">orderPrice</span> <span class="o">=</span> <span class="n">orderItem</span><span class="o">.</span><span class="na">getOrderPrice</span><span class="o">();</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">orderItem</span><span class="o">.</span><span class="na">getCount</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Data</span>
+<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="no">T</span> <span class="n">data</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Result</span><span class="o">(</span><span class="no">T</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="cm">/**
+ * V2. 엔티티를 조회해서 DTO로 변환(fetch join 사용X)
+ * - 트랜잭션 안에서 지연 로딩 필요
+ */</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v2/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV2</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderRepository</span><span class="o">.</span><span class="na">findAllByString</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderSearch</span><span class="o">());</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;</span> <span class="n">orderDtos</span> <span class="o">=</span> <span class="n">orders</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                              <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderDto</span><span class="o">(</span><span class="n">o</span><span class="o">))</span>
+                              <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orderDtos</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-27 15:58:40.546 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        order0_.order_id as order_id1_6_,
+        order0_.delivery_id as delivery4_6_,
+        order0_.member_id as member_i5_6_,
+        order0_.order_date as order_da2_6_,
+        order0_.status as status3_6_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id limit ?
+...
+
+2023-10-27 15:58:40.559 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        member0_.member_id as member_i1_4_0_,
+        member0_.city as city2_4_0_,
+        member0_.street as street3_4_0_,
+        member0_.zipcode as zipcode4_4_0_,
+        member0_.name as name5_4_0_
+    from
+        member member0_
+    where
+        member0_.member_id=?
+...
+
+2023-10-27 15:58:40.568 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_
+    from
+        delivery delivery0_
+    where
+        delivery0_.delivery_id=?
+...
+
+2023-10-27 15:58:40.570 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitems0_.order_id as order_id5_5_0_,
+        orderitems0_.order_item_id as order_it1_5_0_,
+        orderitems0_.order_item_id as order_it1_5_1_,
+        orderitems0_.count as count2_5_1_,
+        orderitems0_.item_id as item_id4_5_1_,
+        orderitems0_.order_id as order_id5_5_1_,
+        orderitems0_.order_price as order_pr3_5_1_
+    from
+        order_item orderitems0_
+    where
+        orderitems0_.order_id=?
+...
+
+2023-10-27 15:58:40.574 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        item0_.item_id as item_id2_3_0_,
+        item0_.name as name3_3_0_,
+        item0_.price as price4_3_0_,
+        item0_.stock_quantity as stock_qu5_3_0_,
+        item0_.artist as artist6_3_0_,
+        item0_.etc as etc7_3_0_,
+        item0_.author as author8_3_0_,
+        item0_.isbn as isbn9_3_0_,
+        item0_.actor as actor10_3_0_,
+        item0_.director as directo11_3_0_,
+        item0_.dtype as dtype1_3_0_
+    from
+        item item0_
+    where
+        item0_.item_id=?
+...
+
+2023-10-27 15:58:40.576 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        item0_.item_id as item_id2_3_0_,
+        item0_.name as name3_3_0_,
+        item0_.price as price4_3_0_,
+        item0_.stock_quantity as stock_qu5_3_0_,
+        item0_.artist as artist6_3_0_,
+        item0_.etc as etc7_3_0_,
+        item0_.author as author8_3_0_,
+        item0_.isbn as isbn9_3_0_,
+        item0_.actor as actor10_3_0_,
+        item0_.director as directo11_3_0_,
+        item0_.dtype as dtype1_3_0_
+    from
+        item item0_
+    where
+        item0_.item_id=?
+...
+
+2023-10-27 15:58:40.577 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        member0_.member_id as member_i1_4_0_,
+        member0_.city as city2_4_0_,
+        member0_.street as street3_4_0_,
+        member0_.zipcode as zipcode4_4_0_,
+        member0_.name as name5_4_0_
+    from
+        member member0_
+    where
+        member0_.member_id=?
+...
+
+2023-10-27 15:58:40.579 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        delivery0_.delivery_id as delivery1_2_0_,
+        delivery0_.city as city2_2_0_,
+        delivery0_.street as street3_2_0_,
+        delivery0_.zipcode as zipcode4_2_0_,
+        delivery0_.status as status5_2_0_
+    from
+        delivery delivery0_
+    where
+        delivery0_.delivery_id=?
+...
+
+2023-10-27 15:58:40.580 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitems0_.order_id as order_id5_5_0_,
+        orderitems0_.order_item_id as order_it1_5_0_,
+        orderitems0_.order_item_id as order_it1_5_1_,
+        orderitems0_.count as count2_5_1_,
+        orderitems0_.item_id as item_id4_5_1_,
+        orderitems0_.order_id as order_id5_5_1_,
+        orderitems0_.order_price as order_pr3_5_1_
+    from
+        order_item orderitems0_
+    where
+        orderitems0_.order_id=?
+...
+
+2023-10-27 15:58:40.582 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        item0_.item_id as item_id2_3_0_,
+        item0_.name as name3_3_0_,
+        item0_.price as price4_3_0_,
+        item0_.stock_quantity as stock_qu5_3_0_,
+        item0_.artist as artist6_3_0_,
+        item0_.etc as etc7_3_0_,
+        item0_.author as author8_3_0_,
+        item0_.isbn as isbn9_3_0_,
+        item0_.actor as actor10_3_0_,
+        item0_.director as directo11_3_0_,
+        item0_.dtype as dtype1_3_0_
+    from
+        item item0_
+    where
+        item0_.item_id=?
+...
+
+2023-10-27 15:58:40.583 DEBUG 89095 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        item0_.item_id as item_id2_3_0_,
+        item0_.name as name3_3_0_,
+        item0_.price as price4_3_0_,
+        item0_.stock_quantity as stock_qu5_3_0_,
+        item0_.artist as artist6_3_0_,
+        item0_.etc as etc7_3_0_,
+        item0_.author as author8_3_0_,
+        item0_.isbn as isbn9_3_0_,
+        item0_.actor as actor10_3_0_,
+        item0_.director as directo11_3_0_,
+        item0_.dtype as dtype1_3_0_
+    from
+        item item0_
+    where
+        item0_.item_id=?
+...
+</code></pre></div></details><p><br /></p><ul><li>지연 로딩으로 인하여 너무 많은 SQL 실행<li>SQL 실행 수<ul><li>order 1번<li>member, address N번(order 조회 수 만큼)<li>orderItem N번(order 조회 수 만큼)<li>item N번(order 조회 수 만큼)</ul></ul><blockquote><p>지연로딩은 영속성 컨텍스트에 있으면 영속성 컨텍스트에 있는 엔티티를 사용하고, 없으면 SQL을 실행함. 그러므로 같은 영속성 컨텍스트에서 이미 로딩한 회원 엔티티를 추가로 조회하면 SQL을 실행하지 않음.</p></blockquote><h3 id="주문조회-v3---엔티티를-dto로-변환하고-페치조인으로-최적화"><span class="mr-2">주문조회 V3 - 엔티티를 DTO로 변환하고 페치조인으로 최적화</span><a href="#주문조회-v3---엔티티를-dto로-변환하고-페치조인으로-최적화" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre><td class="rouge-code"><pre><span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderRepository</span> <span class="o">{</span>
+  <span class="o">...</span>
+
+  <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">findAllItems</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select distinct o "</span> <span class="o">+</span>
+      <span class="s">"from Order o "</span> <span class="o">+</span>
+        <span class="s">"join fetch o.member m "</span> <span class="o">+</span>
+        <span class="s">"join fetch o.delivery d "</span> <span class="o">+</span>
+        <span class="s">"join fetch o.orderItems oi "</span> <span class="o">+</span>
+        <span class="s">"join fetch oi.item i"</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Order</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="o">...</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="cm">/**
+ * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
+ * - 페이징 시에는 N 부분을 포기해야함(대신에 batch fetch size? 옵션 주면 N -&gt; 1 쿼리로 변경 가능)
+*/</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v3/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV3</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderRepository</span><span class="o">.</span><span class="na">findAllItems</span><span class="o">();</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;</span> <span class="n">orderDtos</span> <span class="o">=</span> <span class="n">orders</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                              <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderDto</span><span class="o">(</span><span class="n">o</span><span class="o">))</span>
+                              <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orderDtos</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-27 16:22:35.892 DEBUG 90627 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        distinct order0_.order_id as order_id1_6_0_,
+        member1_.member_id as member_i1_4_1_,
+        delivery2_.delivery_id as delivery1_2_2_,
+        orderitems3_.order_item_id as order_it1_5_3_,
+        item4_.item_id as item_id2_3_4_,
+        order0_.delivery_id as delivery4_6_0_,
+        order0_.member_id as member_i5_6_0_,
+        order0_.order_date as order_da2_6_0_,
+        order0_.status as status3_6_0_,
+        member1_.city as city2_4_1_,
+        member1_.street as street3_4_1_,
+        member1_.zipcode as zipcode4_4_1_,
+        member1_.name as name5_4_1_,
+        delivery2_.city as city2_2_2_,
+        delivery2_.street as street3_2_2_,
+        delivery2_.zipcode as zipcode4_2_2_,
+        delivery2_.status as status5_2_2_,
+        orderitems3_.count as count2_5_3_,
+        orderitems3_.item_id as item_id4_5_3_,
+        orderitems3_.order_id as order_id5_5_3_,
+        orderitems3_.order_price as order_pr3_5_3_,
+        orderitems3_.order_id as order_id5_5_0__,
+        orderitems3_.order_item_id as order_it1_5_0__,
+        item4_.name as name3_3_4_,
+        item4_.price as price4_3_4_,
+        item4_.stock_quantity as stock_qu5_3_4_,
+        item4_.artist as artist6_3_4_,
+        item4_.etc as etc7_3_4_,
+        item4_.author as author8_3_4_,
+        item4_.isbn as isbn9_3_4_,
+        item4_.actor as actor10_3_4_,
+        item4_.director as directo11_3_4_,
+        item4_.dtype as dtype1_3_4_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id
+    inner join
+        delivery delivery2_
+            on order0_.delivery_id=delivery2_.delivery_id
+    inner join
+        order_item orderitems3_
+            on order0_.order_id=orderitems3_.order_id
+    inner join
+        item item4_
+            on orderitems3_.item_id=item4_.item_id
+...
+</code></pre></div></details><p><br /></p><ul><li>페치조인으로 인하여 SQL이 1번만 실행 됨<li>1대다 조인이 있으므로 데이터베이스의 row가 증가하고, 그 결과로 order 엔티티의 조회 수도 증가하게됨<ul><li>JPA의 distinct는 SQL에 distinct 구문을 추가하고 더해서 같은 엔티티가 조회되면 어플리케이션에서 중복을 걸러줌<li>위 예에선 order가 컬렉션 페치조인으로 중복 조회되는 것을 막아줌</ul><li>페이징이 불가능함<ul><li>컬렉션 패치조인을 사용하면 페이징이 불가능 함.<li>하이버네이트는 경고 로그를 남기면서 모든 데이터를 데이터베이스에서 읽어오고 메모리에서 페이징 수행(매후 위험한 작업)</ul><li>컬렉션 페치조인은 1개만 사용 가능<ul><li>데이터가 부정합하게 조회될 수 있으므로 컬렉션 둘 이상의 페치조인을 사용하면 안됨</ul></ul><h3 id="주문조회-v31---엔티티를-dto로-변환-및-페이징-한계-돌파"><span class="mr-2">주문조회 V3.1 - 엔티티를 DTO로 변환 및 페이징 한계 돌파</span><a href="#주문조회-v31---엔티티를-dto로-변환-및-페이징-한계-돌파" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>컬렉션은 페치조인하면 페이징이 불가능<ul><li>컬렉션을 페치조인하면 일대다 조인이 발생하므로 데이터가 예측할 수 없이 증가 함<li>일대다에서 일(1)을 기준으로 페이징을하는 것이 목적이나 데이터는 다(N)를 기준으로 Row가 생성됨<ul><li>위 예시를 보면 Order를 기준으로 페이징하려 했지만, 다(N)인 OrderItem을 조인하면 OrderItem이 기준이 되어버림</ul><li>이 결우 하이버네이트는 경고 로그를 남기고 모든 데이터베이스 데이터를 읽어서 메모리에서 페이징을 시도 함<ul><li>out of memory 가 발생할 수 있는 매우 위험한 작업</ul></ul></ul><p><br /></p><p>위와같은 페이징 + 컬렉션 엔티티를 함께 조회하기 위해선 아래와 같은 방법이 있음. 해당 방법은 성능 최적화도 보장하고 코드도 단순하며 대부분의 페이징 + 컬렉션 엔티티 조회 문제도 해결할 수 있음</p><ul><li>먼저 ToOne(@OneToOne, @ManyToOne) 관계를 모두 페치조인 하도록 함<ul><li>ToOne관계는 row수를 증가시키지 않으므로 페이징 쿼리에 영향을 주지 않음</ul><li>컬렉션은 지연로딩으로 조회<li>지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size 옵션 혹은 @BatchSize 어노테이션을 적용<ul><li>hibernate.default_batch_fetch_size : 글로벌 설정<li>@BatchSize : 개별 최적화<li>해당 옵션을 사용하면 컬렉션이나 프록시 객체를 한번에 설정한 size만큼 IN 쿼리로 조회 함</ul></ul><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="c1"># src/main/resources/application.yml</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">jpa</span><span class="pi">:</span>
+    <span class="na">properties</span><span class="pi">:</span>
+      <span class="na">default_batch_fetch_size</span><span class="pi">:</span> <span class="m">1000</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre><td class="rouge-code"><pre><span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderRepository</span> <span class="o">{</span>
+  <span class="o">...</span>
+
+  <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">findAllItemsWithPaging</span><span class="o">(</span><span class="kt">int</span> <span class="n">offset</span><span class="o">,</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select o "</span> <span class="o">+</span>
+      <span class="s">"from Order o "</span> <span class="o">+</span>
+        <span class="s">"join fetch o.member m "</span> <span class="o">+</span>
+        <span class="s">"join fetch o.delivery d"</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Order</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">setFirstResult</span><span class="o">(</span><span class="n">offset</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">setMaxResults</span><span class="o">(</span><span class="n">limit</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="o">...</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre><td class="rouge-code"><pre><span class="cm">/**
+ * V3.1 엔티티를 조회해서 DTO로 변환 페이징 고려
+ * - ToOne 관계만 우선 모두 페치 조인으로 최적화
+ * - 컬렉션 관계는 hibernate.default_batch_fetch_size, @BatchSize로 최적화
+ */</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v3.1/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV3_1</span><span class="o">(</span>
+  <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"offset"</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">"0"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">offset</span><span class="o">,</span>
+  <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"offset"</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">"100"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderRepository</span><span class="o">.</span><span class="na">findAllItemsWithPaging</span><span class="o">(</span><span class="n">offset</span><span class="o">,</span> <span class="n">limit</span><span class="o">);</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderDto</span><span class="o">&gt;</span> <span class="n">orderDtos</span> <span class="o">=</span> <span class="n">orders</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                              <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderDto</span><span class="o">(</span><span class="n">o</span><span class="o">))</span>
+                              <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orderDtos</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-27 17:45:50.213 DEBUG 92869 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        order0_.order_id as order_id1_6_0_,
+        member1_.member_id as member_i1_4_1_,
+        delivery2_.delivery_id as delivery1_2_2_,
+        order0_.delivery_id as delivery4_6_0_,
+        order0_.member_id as member_i5_6_0_,
+        order0_.order_date as order_da2_6_0_,
+        order0_.status as status3_6_0_,
+        member1_.city as city2_4_1_,
+        member1_.street as street3_4_1_,
+        member1_.zipcode as zipcode4_4_1_,
+        member1_.name as name5_4_1_,
+        delivery2_.city as city2_2_2_,
+        delivery2_.street as street3_2_2_,
+        delivery2_.zipcode as zipcode4_2_2_,
+        delivery2_.status as status5_2_2_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id
+    inner join
+        delivery delivery2_
+            on order0_.delivery_id=delivery2_.delivery_id limit ?
+...
+
+2023-10-27 17:45:50.229 DEBUG 92869 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitems0_.order_id as order_id5_5_1_,
+        orderitems0_.order_item_id as order_it1_5_1_,
+        orderitems0_.order_item_id as order_it1_5_0_,
+        orderitems0_.count as count2_5_0_,
+        orderitems0_.item_id as item_id4_5_0_,
+        orderitems0_.order_id as order_id5_5_0_,
+        orderitems0_.order_price as order_pr3_5_0_
+    from
+        order_item orderitems0_
+    where
+        orderitems0_.order_id in (
+            ?, ?
+        )
+
+2023-10-27 17:45:50.231  INFO 92869 --- [nio-8080-exec-1] p6spy                                    : #1698396350231 | took 0ms | statement | connection 6| url jdbc:h2:mem:6a16d813-a863-46b8-9894-4e710e815fdf
+select orderitems0_.order_id as order_id5_5_1_, orderitems0_.order_item_id as order_it1_5_1_, orderitems0_.order_item_id as order_it1_5_0_, orderitems0_.count as count2_5_0_, orderitems0_.item_id as item_id4_5_0_, orderitems0_.order_id as order_id5_5_0_, orderitems0_.order_price as order_pr3_5_0_ from order_item orderitems0_ where orderitems0_.order_id in (?, ?)
+select orderitems0_.order_id as order_id5_5_1_, orderitems0_.order_item_id as order_it1_5_1_, orderitems0_.order_item_id as order_it1_5_0_, orderitems0_.count as count2_5_0_, orderitems0_.item_id as item_id4_5_0_, orderitems0_.order_id as order_id5_5_0_, orderitems0_.order_price as order_pr3_5_0_ from order_item orderitems0_ where orderitems0_.order_id in (4, 11);
+
+...
+
+2023-10-27 17:45:50.240 DEBUG 92869 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        item0_.item_id as item_id2_3_0_,
+        item0_.name as name3_3_0_,
+        item0_.price as price4_3_0_,
+        item0_.stock_quantity as stock_qu5_3_0_,
+        item0_.artist as artist6_3_0_,
+        item0_.etc as etc7_3_0_,
+        item0_.author as author8_3_0_,
+        item0_.isbn as isbn9_3_0_,
+        item0_.actor as actor10_3_0_,
+        item0_.director as directo11_3_0_,
+        item0_.dtype as dtype1_3_0_
+    from
+        item item0_
+    where
+        item0_.item_id in (
+            ?, ?, ?, ?
+        )
+
+2023-10-27 17:45:50.242  INFO 92869 --- [nio-8080-exec-1] p6spy                                    : #1698396350242 | took 0ms | statement | connection 6| url jdbc:h2:mem:6a16d813-a863-46b8-9894-4e710e815fdf
+select item0_.item_id as item_id2_3_0_, item0_.name as name3_3_0_, item0_.price as price4_3_0_, item0_.stock_quantity as stock_qu5_3_0_, item0_.artist as artist6_3_0_, item0_.etc as etc7_3_0_, item0_.author as author8_3_0_, item0_.isbn as isbn9_3_0_, item0_.actor as actor10_3_0_, item0_.director as directo11_3_0_, item0_.dtype as dtype1_3_0_ from item item0_ where item0_.item_id in (?, ?, ?, ?)
+select item0_.item_id as item_id2_3_0_, item0_.name as name3_3_0_, item0_.price as price4_3_0_, item0_.stock_quantity as stock_qu5_3_0_, item0_.artist as artist6_3_0_, item0_.etc as etc7_3_0_, item0_.author as author8_3_0_, item0_.isbn as isbn9_3_0_, item0_.actor as actor10_3_0_, item0_.director as directo11_3_0_, item0_.dtype as dtype1_3_0_ from item item0_ where item0_.item_id in (2, 3, 9, 10);
+
+...
+</code></pre></div></details><p><br /></p><ul><li>장점<ul><li>쿼리 호출 수가 (N + 1) -&gt; (1 + 1) 로 최적화 됨<li>조인보다 데이터베이스 전송량이 최적화 됨<ul><li>위 코드의 예에서 Order와 OrderItem을 조인하면 Order가 OrderItem 만큼 중복해서 조회되지만, 이 방법은 각각 조회하므로 전송해야할 중복 데이터가 없음</ul><li>패치조인 방식과 비교하여 쿼리 호풀 수가 약간 증가하지만 데이터베이스의 데이터 전송량이 감소<li>컬렉션 패치조인은 페이징이 불가능하지만 이 방법으로는 페이징이 가능</ul></ul><p><br /></p><p>결론은 ToOne 관계는 페치조인해도 페이징에 영향을 주지 않기 때문에, ToOne 관계는 페치조인으로 쿼리 수를 줄여서 해결하고 나머지 지연로딩을 하는 엔티티들은 hibernate.default_batch_fetch_size로 최적화를 해야 함.</p><h4 id="default_batch_fetch_size의-크기"><span class="mr-2">default_batch_fetch_size의 크기</span><a href="#default_batch_fetch_size의-크기" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>default_batch_fetch_size의 크기는 적당한 사이즈를 골라야 하는데 보통 100 ~ 1000 사이를 선택해서 사용. 이 전략은 SQL IN 절을 사용하는데 데이터베이스에 따라 IN 절 파라미터를 1000으로 제한하기도 함.</p><p>1000으로 잡으면 한번에 1000개를 데이터베이스에서 어플리케이션으로 불러오므로 데이터베이스에 순산 부하가 증가 할 수 있음. 반면에 어플리케이션은 100이든 1000이든 결국 데이터 전체를 로딩해야 하므로 메모리 사용량은 같음.</p><p>1000으로 설정하는 것이 성능상 가장 좋지만 결국 데이터베이스든 어플리케이션이든 순간 부하를 어디까지 견딜수 있는지도 결정하면 됨.</p><blockquote><p>참고 스프링 부트 3.1 및 하이버네이트 6.2 에서는 default_batch_fetch_size 옵션으로 인하여 생성되는 SQL에 where … in 문법을 사용하지 않고 where … array_contains 을 사용함</p></blockquote><h3 id="주문조회-v4---jpa메서-dto-직접-조회"><span class="mr-2">주문조회 V4 - JPA메서 DTO 직접 조회</span><a href="#주문조회-v4---jpa메서-dto-직접-조회" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderItemQueryDto</span> <span class="o">{</span>
+  <span class="nd">@JsonIgnore</span>
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">orderId</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">itemName</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">orderPrice</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">OrderItemQueryDto</span><span class="o">(</span><span class="nc">Long</span> <span class="n">orderId</span><span class="o">,</span> <span class="nc">String</span> <span class="n">itemName</span><span class="o">,</span> <span class="kt">int</span> <span class="n">orderPrice</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderId</span> <span class="o">=</span> <span class="n">orderId</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">itemName</span> <span class="o">=</span> <span class="n">itemName</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderPrice</span> <span class="o">=</span> <span class="n">orderPrice</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Data</span>
+<span class="nd">@EqualsAndHashCode</span><span class="o">(</span><span class="n">of</span> <span class="o">=</span> <span class="s">"orderId"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderQueryDto</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">orderId</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">LocalDateTime</span> <span class="n">orderDate</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">OrderStatus</span> <span class="n">orderStatus</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">Address</span> <span class="n">address</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;</span> <span class="n">orderItems</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">OrderQueryDto</span><span class="o">(</span><span class="nc">Long</span> <span class="n">orderId</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">LocalDateTime</span> <span class="n">orderDate</span><span class="o">,</span> <span class="nc">OrderStatus</span> <span class="n">orderStatus</span><span class="o">,</span> <span class="nc">Address</span> <span class="n">address</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderId</span> <span class="o">=</span> <span class="n">orderId</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderDate</span> <span class="o">=</span> <span class="n">orderDate</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderStatus</span> <span class="o">=</span> <span class="n">orderStatus</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">address</span> <span class="o">=</span> <span class="n">address</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Repository</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderQueryRepository</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">EntityManager</span> <span class="n">entityManager</span><span class="o">;</span>
+
+  <span class="cm">/**
+   * 컬렉션은 별도로 조회
+   * Query: 루트 1번, 컬렉션 N 번
+   * 단건 조회에서 많이 사용하는 방식
+   */</span>
+  <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="nf">findOrderQueryDtos</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// 루트 조회(toOne 코드를 모두 한번에 조회)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">findOrders</span><span class="o">();</span>
+
+    <span class="c1">// 루프를 돌면서 컬렉션 추가(추가 쿼리 실행)</span>
+    <span class="n">orders</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">order</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;</span> <span class="n">orderItems</span> <span class="o">=</span> <span class="n">findOrderItems</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getOrderId</span><span class="o">());</span>
+      <span class="n">order</span><span class="o">.</span><span class="na">setOrderItems</span><span class="o">(</span><span class="n">orderItems</span><span class="o">);</span>
+    <span class="o">});</span>
+    <span class="k">return</span> <span class="n">orders</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**
+   * 1:N 관계(컬렉션)를 제외한 나머지를 한번에 조회
+   */</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="nf">findOrders</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select new jpabook.jpashop.repository.order.query.OrderQueryDto(o.id, m.name, o.orderDate, o.status, d.address) "</span> <span class="o">+</span>
+      <span class="s">"from Order o "</span> <span class="o">+</span>
+        <span class="s">"join o.member m "</span> <span class="o">+</span>
+        <span class="s">"join o.delivery d"</span><span class="o">;</span>
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">OrderQueryDto</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**
+   * 1:N 관계인 orderItems 조회
+   */</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;</span> <span class="nf">findOrderItems</span><span class="o">(</span><span class="nc">Long</span> <span class="n">orderId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select new jpabook.jpashop.repository.order.query.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count) "</span> <span class="o">+</span>
+      <span class="s">"from OrderItem oi "</span> <span class="o">+</span>
+        <span class="s">"join oi.item i "</span> <span class="o">+</span>
+      <span class="s">"where oi.order.id = :orderId"</span><span class="o">;</span>
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">OrderItemQueryDto</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"orderId"</span><span class="o">,</span> <span class="n">orderId</span><span class="o">)</span>
+                          <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="cm">/**
+  * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
+  * - 페이징 가능
+  */</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v4/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV4</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderQueryRepository</span><span class="o">.</span><span class="na">findOrderQueryDtos</span><span class="o">();</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orders</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-27 18:20:38.752 DEBUG 95140 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        order0_.order_id as col_0_0_,
+        member1_.name as col_1_0_,
+        order0_.order_date as col_2_0_,
+        order0_.status as col_3_0_,
+        delivery2_.city as col_4_0_,
+        delivery2_.street as col_4_1_,
+        delivery2_.zipcode as col_4_2_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id
+    inner join
+        delivery delivery2_
+            on order0_.delivery_id=delivery2_.delivery_id
+...
+
+2023-10-27 18:20:38.767 DEBUG 95140 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitem0_.order_id as col_0_0_,
+        item1_.name as col_1_0_,
+        orderitem0_.order_price as col_2_0_,
+        orderitem0_.count as col_3_0_
+    from
+        order_item orderitem0_
+    inner join
+        item item1_
+            on orderitem0_.item_id=item1_.item_id
+    where
+        orderitem0_.order_id=?
+...
+
+2023-10-27 18:20:38.770 DEBUG 95140 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitem0_.order_id as col_0_0_,
+        item1_.name as col_1_0_,
+        orderitem0_.order_price as col_2_0_,
+        orderitem0_.count as col_3_0_
+    from
+        order_item orderitem0_
+    inner join
+        item item1_
+            on orderitem0_.item_id=item1_.item_id
+    where
+        orderitem0_.order_id=?
+...
+</code></pre></div></details><p><br /></p><ul><li>Query : 루트 1번, 컬렉션 N번 실행<li>ToOne(N:1, 1:1) 관계들을 먼저 조회하고, ToMany(1:N) 관계는 각각 별도로 처리<ul><li>ToOne 관계는 조인해도 데이터 row 수가 증가하지 않음<li>ToMany(1:N) 관계는 조인하면 row 수가 증가</ul><li>row 수가 증가하지 안는 ToOne 관계는 조인으로 최적화 하기 쉬우므로 한번에 조회하고, ToMany 관계는 최적화하기 어려우므로 findOrderItems() 같은 별도의 메소드로 조회</ul><h3 id="주문조회-v5---jpa메서-dto-직접-조회후-컬렉션-조회-최적화"><span class="mr-2">주문조회 V5 - JPA메서 DTO 직접 조회후 컬렉션 조회 최적화</span><a href="#주문조회-v5---jpa메서-dto-직접-조회후-컬렉션-조회-최적화" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+</pre><td class="rouge-code"><pre><span class="nd">@Repository</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderQueryRepository</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">EntityManager</span> <span class="n">entityManager</span><span class="o">;</span>
+
+  <span class="o">...</span>
+
+  <span class="cm">/**
+   * 1:N 관계(컬렉션)를 제외한 나머지를 한번에 조회
+   */</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="nf">findOrders</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select new jpabook.jpashop.repository.order.query.OrderQueryDto(o.id, m.name, o.orderDate, o.status, d.address) "</span> <span class="o">+</span>
+      <span class="s">"from Order o "</span> <span class="o">+</span>
+        <span class="s">"join o.member m "</span> <span class="o">+</span>
+        <span class="s">"join o.delivery d"</span><span class="o">;</span>
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">OrderQueryDto</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+
+
+  <span class="cm">/**
+   * 최적화
+   * Query: 루트 1번, 컬렉션 1번
+   * 데이터를 한꺼번에 처리할 때 많이 사용하는 방식
+   *
+   */</span>
+  <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="nf">findAllByDto_optimization</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// 루트 조회(toOne 코드를 모두 한번에 조회)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findOrders</span><span class="o">();</span>
+
+    <span class="c1">// orderItem 컬렉션을 map 한번에 조회</span>
+    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;&gt;</span> <span class="n">orderItemMap</span> <span class="o">=</span> <span class="n">findOrdeItemMap</span><span class="o">(</span><span class="n">toOrderIds</span><span class="o">(</span><span class="n">result</span><span class="o">));</span>
+
+    <span class="c1">// 루프를 돌면서 컬렉션 추가(추가 쿼리 실행 x)</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span>
+      <span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span><span class="o">.</span><span class="na">setOrderItems</span><span class="o">(</span><span class="n">orderItemMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">getOrderId</span><span class="o">())));</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="nf">toOrderIds</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                  <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="n">o</span><span class="o">.</span><span class="na">getOrderId</span><span class="o">())</span>
+                  <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;&gt;</span> <span class="nf">findOrdeItemMap</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">orderIds</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select new jpabook.jpashop.repository.order.query.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count) "</span> <span class="o">+</span>
+      <span class="s">"from OrderItem oi "</span> <span class="o">+</span>
+        <span class="s">"join oi.item i "</span> <span class="o">+</span>
+      <span class="s">"where oi.order.id in :orderIds"</span><span class="o">;</span>
+
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderItemQueryDto</span><span class="o">&gt;</span> <span class="n">orderItems</span> <span class="o">=</span>
+      <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">OrderItemQueryDto</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"orderIds"</span><span class="o">,</span> <span class="n">orderIds</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+
+    <span class="k">return</span> <span class="n">orderItems</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">groupingBy</span><span class="o">(</span><span class="nl">OrderItemQueryDto:</span><span class="o">:</span><span class="n">getOrderId</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="cm">/**
+ * V5. JPA에서 DTO로 바로 조회, 컬렉션 1 조회 최적화 버전 (1 + 1 Query)
+ * - 페이징 가능
+ */</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v5/orders"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV5</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderQueryRepository</span><span class="o">.</span><span class="na">findAllByDto_optimization</span><span class="o">();</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orders</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-30 10:25:48.096 DEBUG 16091 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        order0_.order_id as col_0_0_,
+        member1_.name as col_1_0_,
+        order0_.order_date as col_2_0_,
+        order0_.status as col_3_0_,
+        delivery2_.city as col_4_0_,
+        delivery2_.street as col_4_1_,
+        delivery2_.zipcode as col_4_2_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id
+    inner join
+        delivery delivery2_
+            on order0_.delivery_id=delivery2_.delivery_id
+...
+
+2023-10-30 10:25:48.116 DEBUG 16091 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        orderitem0_.order_id as col_0_0_,
+        item1_.name as col_1_0_,
+        orderitem0_.order_price as col_2_0_,
+        orderitem0_.count as col_3_0_
+    from
+        order_item orderitem0_
+    inner join
+        item item1_
+            on orderitem0_.item_id=item1_.item_id
+    where
+        orderitem0_.order_id in (
+            ? , ?
+        )
+...
+</code></pre></div></details><p><br /></p><ul><li>Query : 루트 1번, 컬렉션 1번<li>ToOne 관계들을 먼저 조회하고 여기서 얻은 실별자 orderId로 ToMany 관계인 OrderItem을 한번에 조회<li>Map을 이용하여 매칭 성능 향상(O(1))</ul><h3 id="주문조회-v6---jpa메서-dto-직접-조회후-플렛-데이터로-최적화"><span class="mr-2">주문조회 V6 - JPA메서 DTO 직접 조회후 플렛 데이터로 최적화</span><a href="#주문조회-v6---jpa메서-dto-직접-조회후-플렛-데이터로-최적화" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderFlatDto</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="nc">Long</span> <span class="n">orderId</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">LocalDateTime</span> <span class="n">orderDate</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">Address</span> <span class="n">address</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">OrderStatus</span> <span class="n">orderStatus</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">itemName</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">orderPrice</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">OrderFlatDto</span><span class="o">(</span><span class="nc">Long</span> <span class="n">orderId</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">LocalDateTime</span> <span class="n">orderDate</span><span class="o">,</span> <span class="nc">OrderStatus</span> <span class="n">orderStatus</span><span class="o">,</span>
+                      <span class="nc">Address</span> <span class="n">address</span><span class="o">,</span> <span class="nc">String</span> <span class="n">itemName</span><span class="o">,</span> <span class="kt">int</span> <span class="n">orderPrice</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderId</span> <span class="o">=</span> <span class="n">orderId</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderDate</span> <span class="o">=</span> <span class="n">orderDate</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">address</span> <span class="o">=</span> <span class="n">address</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderStatus</span> <span class="o">=</span> <span class="n">orderStatus</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">itemName</span> <span class="o">=</span> <span class="n">itemName</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">orderPrice</span> <span class="o">=</span> <span class="n">orderPrice</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Repository</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderQueryRepository</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">EntityManager</span> <span class="n">entityManager</span><span class="o">;</span>
+
+  <span class="o">...</span>
+
+  <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderFlatDto</span><span class="o">&gt;</span> <span class="nf">findAllByDto_flat</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+      <span class="s">"select new jpabook.jpashop.repository.order.query.OrderFlatDto(
+        o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count
+      ) "</span> <span class="o">+</span>
+      <span class="s">"from Order o "</span> <span class="o">+</span>
+        <span class="s">"join o.member m "</span> <span class="o">+</span>
+        <span class="s">"join o.delivery d "</span> <span class="o">+</span>
+        <span class="s">"join o.orderItems oi "</span> <span class="o">+</span>
+        <span class="s">"join oi.item i"</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">OrderFlatDto</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">getResultList</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre>  <span class="cm">/**
+   * V6. JPA에서 DTO로 바로 조회, 플랫 데이터(1Query) (1 Query)
+   * - 페이징 불가능...
+   */</span>
+  <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/api/v6/orders"</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="nc">Result</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderQueryDto</span><span class="o">&gt;&gt;</span> <span class="nf">ordersV6</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderFlatDto</span><span class="o">&gt;</span> <span class="n">orders</span> <span class="o">=</span> <span class="n">orderQueryRepository</span><span class="o">.</span><span class="na">findAllByDto_flat</span><span class="o">();</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nc">Result</span><span class="o">&lt;&gt;(</span><span class="n">orders</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">groupingBy</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderQueryDto</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">getOrderId</span><span class="o">(),</span> <span class="n">o</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+                                                                  <span class="n">o</span><span class="o">.</span><span class="na">getOrderDate</span><span class="o">(),</span> <span class="n">o</span><span class="o">.</span><span class="na">getOrderStatus</span><span class="o">(),</span>
+                                                                  <span class="n">o</span><span class="o">.</span><span class="na">getAddress</span><span class="o">()),</span>
+                    <span class="nc">Collectors</span><span class="o">.</span><span class="na">mapping</span><span class="o">(</span><span class="n">o</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderItemQueryDto</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">getOrderId</span><span class="o">(),</span> <span class="n">o</span><span class="o">.</span><span class="na">getItemName</span><span class="o">(),</span>
+                                                                  <span class="n">o</span><span class="o">.</span><span class="na">getOrderPrice</span><span class="o">(),</span> <span class="n">o</span><span class="o">.</span><span class="na">getCount</span><span class="o">()),</span>
+                                      <span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">())</span>
+            <span class="o">)).</span><span class="na">entrySet</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+              <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">e</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">OrderQueryDto</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getOrderId</span><span class="o">(),</span> <span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span>
+                                          <span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getOrderDate</span><span class="o">(),</span> <span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getOrderStatus</span><span class="o">(),</span>
+                                          <span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">().</span><span class="na">getAddress</span><span class="o">(),</span> <span class="n">e</span><span class="o">.</span><span class="na">getValue</span><span class="o">()))</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
+  <span class="o">}</span>
+</pre></table></code></div></div><details> <summary>생성되는 SQL 로그</summary><div><pre><code class="language-log">2023-10-30 10:55:06.426 DEBUG 18016 --- [nio-8080-exec-1] org.hibernate.SQL                        :
+    select
+        order0_.order_id as col_0_0_,
+        member1_.name as col_1_0_,
+        order0_.order_date as col_2_0_,
+        order0_.status as col_3_0_,
+        delivery2_.city as col_4_0_,
+        delivery2_.street as col_4_1_,
+        delivery2_.zipcode as col_4_2_,
+        item4_.name as col_5_0_,
+        orderitems3_.order_price as col_6_0_,
+        orderitems3_.count as col_7_0_
+    from
+        orders order0_
+    inner join
+        member member1_
+            on order0_.member_id=member1_.member_id
+    inner join
+        delivery delivery2_
+            on order0_.delivery_id=delivery2_.delivery_id
+    inner join
+        order_item orderitems3_
+            on order0_.order_id=orderitems3_.order_id
+    inner join
+        item item4_
+            on orderitems3_.item_id=item4_.item_id
+...
+</code></pre></div></details><p><br /></p><ul><li>Query : 1번<li>단점<ul><li>쿼리는 한번이지만 조인으로 인하여 데이터베이스에서 어플리케이션에 전달하는 데이터에 중복데이터가 추가되어 상황에 따라 V5보다 느릴수 있음<li>어플리케이션에 데이터 처리에 대한 추가 작업이 많음<li>페이징 불가능</ul></ul><h3 id="정리"><span class="mr-2">정리</span><a href="#정리" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>엔티티 조회<ul><li>엔티티를 조회해서 그대로 반환(V1)<li>엔티티 조회후 DTO로 변환(V2)<li>페치조인으로 쿼리 수 최적화(V3)<li>컬렉션 페이징과 한계 돌파(V3.1)<ul><li>컬렉션은 페치조인시 페이징 불가능<li>ToOne 관계는 페치조인으로 쿼리수 최적화<li>컬렉션은 페치조인 대신에 지연 로딩을 유지하고, hibernate.default_batch_fetch_size나 @BatchSize로 최적화</ul></ul><li>DTO 직접 조회<ul><li>JPA에서 DTO를 직접 조회(V4)<li>컬렉션조회 최적화(V5)<ul><li>일대다 관계인 컬렉션은 IN 절을 활용하여 메모리에 미리 조회해서 최적화 시도</ul><li>플렛 데이터 최적화(V6)<ul><li>JOIN 결과를 그대로 조죄 후 어플리케이션에서 워하는 모양으로 직접 변환</ul></ul></ul><h4 id="권장-순서"><span class="mr-2">권장 순서</span><a href="#권장-순서" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>엔티티 조회 방식으로 우선접근<ul><li>페치조인으로 쿼리수를 최적화<li>컬렉션 최적화<ul><li>페이징이 필요하다면 hibernate.default_batch_fetch_size나 @BatchSize로 최적화<li>페이징이 불필요 하다면 단순히 패치조인 사용</ul><li>엔티티 조회 방식은 페치조인이나 hibernate.default_batch_fetch_size나 @BatchSize 같이 코드를 거의 수정하지 않고, 옵션만 약간 변경하여 다양한 성능 최적화 시도 가능</ul><li>엔티티 조회 방식으로 해결이 안되면 DTO 조회 방식 사용<ul><li>성능을 최적화 하거나 성능 최적화 방식을 변경할 떄 많은 코드 수정 필요</ul><li>DTO 조회 방식으로도 해결이 안되면 NativeSQL이나 스프링 JdbcTemplate 사용하거나, 캐시를 이용해서 성능 최적화 시도<ul><li>캐시를 이용할 시, 영속성 컨텍스트에서 관리되고 있는 엔티티를 또 다른 캐시에 저장하면 안됨<ul><li>또 다른 내부 캐시저장소에 저장하게 되면 관리 포인트가 2곳이 되므로 객체의 관리가 원활히 되지 않음</ul><li>DTO를 만들어 DTO를 캐시에 저장해야 함</ul></ul><h4 id="dto-조회-방식의-선택지"><span class="mr-2">DTO 조회 방식의 선택지</span><a href="#dto-조회-방식의-선택지" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>DTO로 조회하는 방법도 각각 장단이 있음</p><ul><li>V4 방식은 코드가 단순함<ul><li>특정 주문 한건만 조회 핟다면 해당 방식도 성능이 잘 나옴<li>예를 들어 조회한 Order 데이터가 1건이면 OrderItem을 찾기 위한 쿼리도 1번만 실행됨</ul><li>V5 방식은 코드가 복잡하지만 실행되는 쿼리가 적음<ul><li>여러 주문을 한번에 조회하는 경우 V4의 방식대신 V5 방식을 사용해야함<li>예를 들어 조회한 Order 데이터가 1000건일때 V4 방식을 그대로 사용하면, 쿼리가 총 1 + 1000번 실행됨(1은 Order를 조회한 쿼리이고 1000은 조회된 Order의 row 수) 그러나 V5 방식으로 최적화 하면 쿼리가 총 1 + 1번만 실행 됨</ul><li>V6 방식은 완전히 다른 접근방식이며 쿼리가 한번만 실행 됨<ul><li>쿼리가 한번만 실행되어 좋은 방식인 것 같으나, Order를 기준으로 페이징이 불가능 함<li>실무에서는 수백이나, 수천건 단위로 페이징 처리가 필요할 떄가 많으므로 선택하기엔 어려운 방식<li>데이터가 많으면 중복 전송으로 인하여 V5 방식과 비교했을떄 성능차이도 미비 함</ul></ul><hr /><p>참고</p><ul><li>실전! 스프링 부트와 JPA 활용2 - 웹 애플리케이션 개발(김영한)</ul></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/backend/'>Backend</a>, <a href='/categories/jpa/'>JPA</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/web/" class="post-tag no-text-decoration" >Web</a> <a href="/tags/spring-framework/" class="post-tag no-text-decoration" >Spring Framework</a> <a href="/tags/database/" class="post-tag no-text-decoration" >DataBase</a> <a href="/tags/jpa/" class="post-tag no-text-decoration" >JPA</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=JPA - 컬렉션 조회 최적화 - My Technical Diary&amp;url=https://issuh.github.io/posts/spring-jpa-13/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=JPA - 컬렉션 조회 최적화 - My Technical Diary&amp;u=https://issuh.github.io/posts/spring-jpa-13/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/spring-jpa-13/&amp;text=JPA - 컬렉션 조회 최적화 - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/spring-jpa-01/"><div class="card-body"> <em class="timeago small" data-ts="1698022800" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 영속성 관리</h3><div class="text-muted small"><p> 영속성 컨텍스트 엔티티를 영구 저장하는 환경 영속성 컨텍스트는 눈에 보이지 않는 논리적인 개녕 엔티티 매니저를 통하여 영속성 컨텍스트에 접근 스프링 프레임워크의 컨테이너내에는 엔티티 매니저와 영속성 컨택스트가 N:1 관게로 이루어져 있음 엔티티의 생명주기 비영속(new/transient) 영속(menaged) 준영속(...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-02/"><div class="card-body"> <em class="timeago small" data-ts="1698039000" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 엔티티 매핑</h3><div class="text-muted small"><p> 엔티티 매핑 객체와 테이블 매핑 @Entity, @Table 필드와 컬럼 매핑 @Column 기본 키 매핑 @Id 연관관계 매핑 @ManyToOne, @JoinColumn 객체와 테이블 매핑 @...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-03/"><div class="card-body"> <em class="timeago small" data-ts="1698111000" > 2023-10-24 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 연관관계 매핑</h3><div class="text-muted small"><p> 연관관계가 필요한 이유 객체를 테이블에 맞추어 데이터 중심으로 모델링 하면, 협력관계를 만들 수 없음 데이블은 외래키로 조인을 사용해서 연관된 테이블을 찾음 객체는 참조를 사ㅇ해서 연관된 객체를 찾음 데이블과 객체 사이에는 이런 큰 간격이 존재 함 단방향 연관관계 어느 한쪽만이 다른쪽을 소유하고 있는 관계. 객체의 참조와 테이블의...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/spring-jpa-12/" class="btn btn-outline-primary" prompt="Older"><p>JPA - 지연로딩과 성능 최적화</p></a> <a href="/posts/spring-jpa-14/" class="btn btn-outline-primary" prompt="Newer"><p>JPA - OSIV(Open Session In View)와 성능 최적화</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>

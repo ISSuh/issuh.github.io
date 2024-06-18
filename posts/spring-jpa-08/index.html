@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="JPA - 객체 지향 쿼리 언어(1)" /><meta property="og:locale" content="en" /><meta name="description" content="JPQL 개요" /><meta property="og:description" content="JPQL 개요" /><link rel="canonical" href="https://issuh.github.io/posts/spring-jpa-08/" /><meta property="og:url" content="https://issuh.github.io/posts/spring-jpa-08/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2023-10-25T14:30:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="JPA - 객체 지향 쿼리 언어(1)" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-04-23T22:54:02+09:00","datePublished":"2023-10-25T14:30:00+09:00","description":"JPQL 개요","headline":"JPA - 객체 지향 쿼리 언어(1)","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/spring-jpa-08/"},"url":"https://issuh.github.io/posts/spring-jpa-08/"}</script><title>JPA - 객체 지향 쿼리 언어(1) | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>JPA - 객체 지향 쿼리 언어(1)</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>JPA - 객체 지향 쿼리 언어(1)</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1698211800" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2023-10-25 </em> </span> <span> Updated <em class="timeago" data-ts="1713880442" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2024-04-23 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="1973 words"> <em>10 min</em> read</span></div></div></div><div class="post-content"><h3 id="jpql-개요"><span class="mr-2">JPQL 개요</span><a href="#jpql-개요" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>테이블이 아닌 객체를 대상으로 검색하는 객체 지향 쿼리<li>SQL을 추상화하여 특정 데이터베이스 SQL에 의존하지 않음<li>쿼리시 테이블이 아닌 <strong>엔티티 객체를 대상으로 쿼리</strong><ul><li>JPQL은 엔티티 객체를 대상으로 쿼리<li>SQL은 데이터베이스 테이블을 대상으로 쿼리</ul></ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span> <span class="s">"select m from Member m where m.age &gt; 18"</span><span class="o">;</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span>
+  <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Member</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">getResultList</span><span class="o">();</span>
+</pre></table></code></div></div><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="k">select</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">age</span> <span class="k">as</span> <span class="n">age</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">USERNAME</span> <span class="k">as</span> <span class="n">USERNAME</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">TEAM_ID</span> <span class="k">as</span> <span class="n">TEAM_ID</span>
+<span class="k">from</span>
+    <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">age</span><span class="o">&gt;</span><span class="mi">18</span>
+</pre></table></code></div></div><h3 id="jpql-기본-문법과-기능"><span class="mr-2">JPQL 기본 문법과 기능</span><a href="#jpql-기본-문법과-기능" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre><td class="rouge-code"><pre><span class="c1">-- 기본문법</span>
+<span class="n">select_</span><span class="err">문</span> <span class="p">::</span> <span class="o">=</span>
+    <span class="n">select_</span><span class="err">절</span>
+    <span class="n">from_</span><span class="err">절</span>
+    <span class="p">[</span><span class="n">where_</span><span class="err">절</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">groupby_</span><span class="err">절</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">having_</span><span class="err">절</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">orderby_</span><span class="err">절</span><span class="p">]</span>
+<span class="n">update_</span><span class="err">문</span> <span class="p">::</span> <span class="o">=</span> <span class="n">update_</span><span class="err">절</span> <span class="p">[</span><span class="n">where_</span><span class="err">절</span><span class="p">]</span>
+<span class="n">delete_</span><span class="err">문</span> <span class="p">::</span> <span class="o">=</span> <span class="n">delete_</span><span class="err">절</span> <span class="p">[</span><span class="n">where_</span><span class="err">절</span><span class="p">]</span>
+
+<span class="c1">-- 기본적인 함수 지원</span>
+<span class="k">select</span>
+    <span class="k">COUNT</span><span class="p">(</span><span class="n">m</span><span class="p">),</span>   <span class="o">//</span><span class="err">회원수</span>
+    <span class="k">SUM</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">age</span><span class="p">),</span> <span class="o">//</span><span class="err">나이</span> <span class="err">합</span>
+    <span class="k">AVG</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">age</span><span class="p">),</span> <span class="o">//</span><span class="err">평균</span> <span class="err">나이</span>
+    <span class="k">MAX</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">age</span><span class="p">),</span> <span class="o">//</span><span class="err">최대</span> <span class="err">나이</span>
+    <span class="k">MIN</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">age</span><span class="p">)</span>  <span class="o">//</span><span class="err">최소</span> <span class="err">나이</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+
+<span class="c1">-- 기본적인 정렬 지원</span>
+<span class="k">GROUP</span> <span class="k">BY</span><span class="p">,</span> <span class="k">HAVING</span>
+<span class="k">ORDER</span> <span class="k">BY</span>
+</pre></table></code></div></div><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="k">select</span> <span class="n">m</span> <span class="k">from</span> <span class="n">Member</span> <span class="k">as</span> <span class="n">m</span> <span class="k">where</span> <span class="n">m</span><span class="p">.</span><span class="n">age</span> <span class="o">&gt;</span> <span class="mi">18</span>
+</pre></table></code></div></div><ul><li>엔티티와 속성은 대소문자를 구분 함<li>JPQL 키워드는 대소문자를 구분하지 않음<li>엔티티 이름을 사용하며 테이블의 이름이 아님<li><strong>별칭이 필수</strong>(as는 생략 가능)</ul><h4 id="typequery-query"><span class="mr-2">TypeQuery, Query</span><a href="#typequery-query" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>TypeQuery<ul><li>반환 타입이 명확할 떄 사용</ul><li>Query<ul><li>반환 타입이 명확하지 않을 떄 사용</ul></ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="nc">TypedQuery</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">query</span> <span class="o">=</span>
+    <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT m FROM Member m"</span><span class="o">,</span> <span class="nc">Member</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+<span class="nc">Query</span> <span class="n">query</span> <span class="o">=</span>
+    <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"SELECT m.username, m.age from Member m"</span><span class="o">);</span>
+</pre></table></code></div></div><h4 id="결과-조회-api"><span class="mr-2">결과 조회 API</span><a href="#결과-조회-api" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>query.getResultList()<ul><li><strong>결과가 하나 이상일떄</strong> 리스트를 반환<li>결과가 없으면 빈 리스트 반환</ul><li>query.getSingleResult()<ul><li><strong>경과가 정확히 하나일떄</strong> 단일 객체 반환<li>결과가 없으면 javax.persistence.NoResultException 발생<li>결과가 2개 이상이면 javax.persistence.NonUniqueResultException 발생</ul></ul><h4 id="파라미터-바인딩"><span class="mr-2">파라미터 바인딩</span><a href="#파라미터-바인딩" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">// 이름으로 바인딩</span>
+<span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span> <span class="s">"SELECT m FROM Member m where m.username=:username"</span><span class="o">;</span>
+<span class="nc">TypedQuery</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">query</span> <span class="o">=</span>
+    <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Member</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="n">usernameParam</span><span class="o">);</span>
+
+<span class="c1">// 인덱스로 바인딩</span>
+<span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span> <span class="s">"SELECT m FROM Member m where m.username=?1"</span><span class="o">;</span>
+<span class="nc">TypedQuery</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">query</span> <span class="o">=</span>
+    <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Member</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">setParameter</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">usernameParam</span><span class="o">);</span>
+</pre></table></code></div></div><ul><li>인덱스로 바인딩하는 경우 인덱스를 밀려 파라미터를 설정할수 있으므로 실수를 미연에 방지하기 위해 이름으로 바인딩 하는것을 추천</ul><h4 id="프로젝션"><span class="mr-2">프로젝션</span><a href="#프로젝션" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>Select 절에 조회할 대상을 지정하는 것</p><ul><li>프로젝션 대상 : 엔티티, 임베디드 타입, 스칼라 타입(숫자, 문자등 기본 데이터 타입)<li>SELECT m FROM Member m -&gt; 엔티티 프로젝션<li>SELECT m.team FROM Member m -&gt; 엔티티 프로젝션<ul><li>엔티티 타입은 별도의 테이블이 존재하므로, jpql에서 명시적으로 join을 하지 않아도 sql로 변환할떄 자동으로 해당 테이블을 join 하도록 sql이 변환됨<li>유지보수를 위해 명시적으로 jpql에도 join을 명시하여 생성되는 sql과 싱크를 맞추는것이 좋음</ul><li>SELECT m.address FROM Member m -&gt; 임베디드 타입 프로젝션<li>SELECT m.username, m.age FROM Member m -&gt; 스칼라 타입 프로젝션<li>DISTINCT로 중복 제거</ul><p><br /></p><p>하나의 대상 말고 여러 대상을 조회하고 싶을떈 아래와 같은 방법이 있음</p><ul><li>Query 타입으로 조회<li>Object[] 타입으로 조회<li>new 명령어로 조회<ul><li>단순 값을 DTO로 바로 조회<li>패키지 명을 포함한 전체 클래스명 입력 필요<li>순서와 타입이 일치하는 생성자 필요</ul></ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre><td class="rouge-code"><pre><span class="c1">// new 명령어를 통해 DTO로 변환하여 조회</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDTO</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">UserDTO</span><span class="o">(</span><span class="nc">Strig</span> <span class="n">username</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="o">...</span>
+
+<span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span>
+  <span class="s">"SELECT new jpabook.jpql.UserDTO(m.username, m.age) FROM Member m"</span>
+</pre></table></code></div></div><h4 id="페이징"><span class="mr-2">페이징</span><a href="#페이징" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>JPA는 페이징을 다음 두 API로 추상화</p><ul><li>setFirstResult(int startPosition)<ul><li>조회 시작 위치<li>0부터 시작</ul><li>setMaxResults(int maxResult)<ul><li>조회할 데이터 수</ul></ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="c1">// 10번쨰 부터 20개를 가져옴</span>
+<span class="nc">String</span> <span class="n">jpql</span> <span class="o">=</span> <span class="s">"select m from Member m order by m.name desc"</span><span class="o">;</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">resultList</span> <span class="o">=</span>
+  <span class="n">em</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">jpql</span><span class="o">,</span> <span class="nc">Member</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">setFirstResult</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">setMaxResults</span><span class="o">(</span><span class="mi">20</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span>
+</pre></table></code></div></div><h4 id="조인"><span class="mr-2">조인</span><a href="#조인" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>내부 조인<ul><li>SELECT m FROM Member m [INNER] JOIN m.team t<li>INNER 는 생략 가능</ul><li>외부 조인<ul><li>SELECT m FROM Member m LEFT [OUTER] JOIN m.team t<li>OUTER 는 생략 가능</ul><li>세타 조인<ul><li>SELECT count(m) FROM Member m, TEAM t WHERE m.username = t.name</ul></ul><h5 id="조인-on-절"><span class="mr-2">조인 ON 절</span><a href="#조인-on-절" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5></h5><ul><li>ON절을 활용한 조인(JPA 2.1 부터 지원)<ul><li>조인 대상 필터링<li>연관관계 없는 엔티티 외부 조인(하이버네이트 5.1 부터 지원)</ul></ul><p>조인 대상 필터링 예시</p><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">-- 회원과 팀을 조인하면서 팀 이름이 A인 팀만 조인</span>
+
+<span class="c1">-- JPQL</span>
+<span class="k">SELECT</span> <span class="n">m</span><span class="p">,</span> <span class="n">t</span>
+<span class="k">FROM</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">m</span><span class="p">.</span><span class="n">team</span> <span class="n">t</span> <span class="k">on</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'A'</span>
+
+<span class="c1">-- SQL</span>
+<span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">t</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">Team</span> <span class="n">t</span> <span class="k">on</span> <span class="n">m</span><span class="p">.</span><span class="n">TEAM_ID</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">id</span> <span class="k">AND</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'A'</span>
+</pre></table></code></div></div><p><br /></p><p>연관관계 없는 엔티티 외부 조인 예시</p><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1">-- 회원의 이름과 팀의 이름이 같은 대상 외부 조인</span>
+
+<span class="c1">-- JPQL</span>
+<span class="k">SELECT</span> <span class="n">m</span><span class="p">,</span> <span class="n">t</span>
+<span class="k">FROM</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">Team</span> <span class="n">t</span> <span class="k">on</span> <span class="n">m</span><span class="p">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span>
+
+<span class="c1">-- SQL</span>
+<span class="k">SELECT</span> <span class="n">m</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">t</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">Team</span> <span class="n">t</span> <span class="k">on</span> <span class="n">m</span><span class="p">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span>
+</pre></table></code></div></div><h4 id="서브-쿼리"><span class="mr-2">서브 쿼리</span><a href="#서브-쿼리" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>[NOT] EXISTS (subquery): 서브쿼리에 결과가 존재하면 참<ul><li><div class="table-wrapper"><table><tbody><tr><td>{ALL<td>ANY<td>SOME} (subquery)</table></div><li>ALL 모두 만족하면 참<li>ANY, SOME: 같은 의미, 조건을 하나라도 만족하면 참</ul><li>[NOT] IN (subquery): 서브쿼리의 결과 중 하나라도 같은 것이 있으면 참</ul><p>서브쿼리 예시</p><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre><td class="rouge-code"><pre><span class="c1">-- 나이가 평균보다 많은 회원</span>
+<span class="k">select</span> <span class="n">m</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span> <span class="n">m</span><span class="p">.</span><span class="n">age</span> <span class="o">&gt;</span> <span class="p">(</span><span class="k">select</span> <span class="k">avg</span><span class="p">(</span><span class="n">m2</span><span class="p">.</span><span class="n">age</span><span class="p">)</span> <span class="k">from</span> <span class="n">Memeber</span> <span class="n">m2</span><span class="p">)</span>
+
+<span class="c1">-- 한 건이라도 주문한 고객</span>
+<span class="k">select</span> <span class="n">m</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span> <span class="p">(</span><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">from</span> <span class="k">Order</span> <span class="n">o</span> <span class="k">where</span> <span class="n">m</span> <span class="o">=</span> <span class="n">o</span><span class="p">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<span class="c1">-- 팀이름이 A에 소속된 회원</span>
+<span class="k">select</span> <span class="n">m</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span> <span class="k">exists</span> <span class="p">(</span><span class="k">select</span> <span class="n">t</span> <span class="k">from</span> <span class="n">m</span><span class="p">.</span><span class="n">team</span> <span class="n">t</span> <span class="k">where</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'A'</span><span class="p">)</span>
+
+<span class="c1">-- 전체 상품 각각의 재고보다 주문량이 많은 주문들</span>
+<span class="k">select</span> <span class="n">m</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span> <span class="n">o</span><span class="p">.</span><span class="n">orderAmount</span> <span class="o">&gt;</span> <span class="k">all</span> <span class="p">(</span><span class="k">select</span> <span class="n">p</span><span class="p">.</span><span class="n">stockAmount</span> <span class="k">from</span> <span class="n">Product</span> <span class="n">p</span><span class="p">)</span>
+
+<span class="c1">-- 어떤 팀이든 팀에 소속된 회원</span>
+<span class="k">select</span> <span class="n">m</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+<span class="k">where</span> <span class="n">m</span><span class="p">.</span><span class="n">team</span> <span class="o">=</span> <span class="k">any</span> <span class="p">(</span><span class="k">select</span> <span class="n">t</span> <span class="k">from</span> <span class="n">Team</span> <span class="n">t</span><span class="p">)</span>
+</pre></table></code></div></div><h5 id="서브쿼리의-한계"><span class="mr-2">서브쿼리의 한계</span><a href="#서브쿼리의-한계" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5></h5><ul><li>JPA는 WHERE, HAVING 절에서만 서브 쿼리 사용가능<li>SELECT 절의 경우 하이버네이트 사용시 사용 가능<li>FROM 절의 서브쿼리는 JPQL에서 불가능<ul><li>조인으로 풀 수 있으면 풀어서 해결</ul><li>하이버네이트 6 부터는 FROM 절의 서브쿼리를 지원</ul><h4 id="조건식case-식"><span class="mr-2">조건식(CASE 식)</span><a href="#조건식case-식" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre><td class="rouge-code"><pre><span class="c1">-- 기본 CASE 식</span>
+<span class="k">select</span>
+  <span class="k">case</span>
+    <span class="k">when</span> <span class="n">m</span><span class="p">.</span><span class="n">age</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">then</span> <span class="s1">'학생'</span>
+    <span class="k">when</span> <span class="n">m</span><span class="p">.</span><span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">60</span> <span class="k">then</span> <span class="s1">'경로'</span>
+    <span class="k">else</span> <span class="s1">'일반'</span>
+  <span class="k">and</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+
+<span class="c1">-- 단순 CASE 식</span>
+<span class="k">select</span>
+  <span class="k">case</span> <span class="n">t</span><span class="p">.</span><span class="n">name</span>
+    <span class="k">when</span> <span class="s1">'팁A'</span> <span class="k">then</span> <span class="s1">'인센티브110%'</span>
+    <span class="k">when</span> <span class="s1">'팁B'</span> <span class="k">then</span> <span class="s1">'인센티브120%'</span>
+    <span class="k">else</span> <span class="s1">'인센티브105%'</span>
+  <span class="k">and</span>
+<span class="k">from</span> <span class="n">Team</span> <span class="n">t</span>
+
+<span class="c1">-- COALESCE: 하나씩 조회해서 null이 아니면 반환</span>
+<span class="c1">-- 사용자 이름이 없으면 이름 없는 회원을 반환</span>
+<span class="k">select</span> <span class="n">coalesce</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">'이름없는회원'</span><span class="p">)</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+
+<span class="c1">-- NULLIF: 두 값이 같으면 null 반환, 다르면 첫번째 값 반환</span>
+<span class="c1">-- 사용자 이름이 관리자면 null을 반환하고 나머지는 본인의 이름을 반한</span>
+<span class="k">select</span> <span class="k">NULLIF</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">username</span><span class="p">,</span> <span class="s1">'관리자'</span><span class="p">)</span>
+<span class="k">from</span> <span class="n">Member</span> <span class="n">m</span>
+</pre></table></code></div></div><h4 id="jpql-기본-함수"><span class="mr-2">JPQL 기본 함수</span><a href="#jpql-기본-함수" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>CONCAT<li>SUBSTRING<li>TRIM<li>LOWER, UPPER<li>LENGTH<li>LOCATE<li>ABS, SQRT, MOD<li>SIZE, INDEX(JPA 용도)</ul><p><br /></p><p>사용자 정의 함수를 지정하여 호출할 수 있음</p><ul><li>하이버네이트는 사용전 방언에 추가해야 함<ul><li>사용하는 DB 방언을 상속받고, 사용자 정의 함수를 등록해야 함</ul></ul><div class="language-sql highlighter-rouge"><div class="code-header"> <span data-label-text="Sql"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="k">select</span> <span class="k">function</span><span class="p">(</span><span class="s1">'group_concat'</span><span class="p">,</span> <span class="n">i</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">from</span> <span class="n">Item</span> <span class="n">i</span>
+</pre></table></code></div></div><hr /><p>참고</p><ul><li>자바 ORM 표준 JPA 프로그래밍(김영한)</ul></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/backend/'>Backend</a>, <a href='/categories/jpa/'>JPA</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/web/" class="post-tag no-text-decoration" >Web</a> <a href="/tags/spring-framework/" class="post-tag no-text-decoration" >Spring Framework</a> <a href="/tags/database/" class="post-tag no-text-decoration" >DataBase</a> <a href="/tags/jpa/" class="post-tag no-text-decoration" >JPA</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=JPA - 객체 지향 쿼리 언어(1) - My Technical Diary&amp;url=https://issuh.github.io/posts/spring-jpa-08/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=JPA - 객체 지향 쿼리 언어(1) - My Technical Diary&amp;u=https://issuh.github.io/posts/spring-jpa-08/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/spring-jpa-08/&amp;text=JPA - 객체 지향 쿼리 언어(1) - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/spring-jpa-01/"><div class="card-body"> <em class="timeago small" data-ts="1698022800" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 영속성 관리</h3><div class="text-muted small"><p> 영속성 컨텍스트 엔티티를 영구 저장하는 환경 영속성 컨텍스트는 눈에 보이지 않는 논리적인 개녕 엔티티 매니저를 통하여 영속성 컨텍스트에 접근 스프링 프레임워크의 컨테이너내에는 엔티티 매니저와 영속성 컨택스트가 N:1 관게로 이루어져 있음 엔티티의 생명주기 비영속(new/transient) 영속(menaged) 준영속(...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-02/"><div class="card-body"> <em class="timeago small" data-ts="1698039000" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 엔티티 매핑</h3><div class="text-muted small"><p> 엔티티 매핑 객체와 테이블 매핑 @Entity, @Table 필드와 컬럼 매핑 @Column 기본 키 매핑 @Id 연관관계 매핑 @ManyToOne, @JoinColumn 객체와 테이블 매핑 @...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-03/"><div class="card-body"> <em class="timeago small" data-ts="1698111000" > 2023-10-24 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 연관관계 매핑</h3><div class="text-muted small"><p> 연관관계가 필요한 이유 객체를 테이블에 맞추어 데이터 중심으로 모델링 하면, 협력관계를 만들 수 없음 데이블은 외래키로 조인을 사용해서 연관된 테이블을 찾음 객체는 참조를 사ㅇ해서 연관된 객체를 찾음 데이블과 객체 사이에는 이런 큰 간격이 존재 함 단방향 연관관계 어느 한쪽만이 다른쪽을 소유하고 있는 관계. 객체의 참조와 테이블의...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/spring-jpa-07/" class="btn btn-outline-primary" prompt="Older"><p>JPA - 프록시와 연관관계 관리(2)</p></a> <a href="/posts/spring-mvc-05/" class="btn btn-outline-primary" prompt="Newer"><p>Spring MVC - PRG(Post/Redirect/Get) 패턴</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>

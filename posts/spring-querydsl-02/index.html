@@ -1,0 +1,313 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="QueryDSL - 중급 문법" /><meta property="og:locale" content="en" /><meta name="description" content="프로젝션과 결과 반환 - 기본" /><meta property="og:description" content="프로젝션과 결과 반환 - 기본" /><link rel="canonical" href="https://issuh.github.io/posts/spring-querydsl-02/" /><meta property="og:url" content="https://issuh.github.io/posts/spring-querydsl-02/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2023-11-01T14:30:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="QueryDSL - 중급 문법" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-04-23T22:54:02+09:00","datePublished":"2023-11-01T14:30:00+09:00","description":"프로젝션과 결과 반환 - 기본","headline":"QueryDSL - 중급 문법","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/spring-querydsl-02/"},"url":"https://issuh.github.io/posts/spring-querydsl-02/"}</script><title>QueryDSL - 중급 문법 | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>QueryDSL - 중급 문법</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>QueryDSL - 중급 문법</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1698816600" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2023-11-01 </em> </span> <span> Updated <em class="timeago" data-ts="1713880442" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2024-04-23 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="1177 words"> <em>6 min</em> read</span></div></div></div><div class="post-content"><h3 id="프로젝션과-결과-반환---기본"><span class="mr-2">프로젝션과 결과 반환 - 기본</span><a href="#프로젝션과-결과-반환---기본" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>프로젝션 : select 대상 지정</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Tuple</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+
+<span class="k">for</span> <span class="o">(</span><span class="nc">Tuple</span> <span class="n">tuple</span> <span class="o">:</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">String</span> <span class="n">username</span> <span class="o">=</span> <span class="n">tuple</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">username</span><span class="o">);</span>
+  <span class="nc">Integer</span> <span class="n">age</span> <span class="o">=</span> <span class="n">tuple</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">);</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"username="</span> <span class="o">+</span> <span class="n">username</span><span class="o">);</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"age="</span> <span class="o">+</span> <span class="n">age</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><ul><li>프로젝션 대상이 둘 시상일떄 com.querydsl.core.Tuple 타입 사용<ul><li>결국 querydsl의 타입이므로 리포지토리 밖의 서비스나 컨트롤러에서 이 Tuple을 사용하는건 좋지 않음</ul></ul><h3 id="프로젝션과-결과-반환---dto-조회"><span class="mr-2">프로젝션과 결과 반환 - DTO 조회</span><a href="#프로젝션과-결과-반환---dto-조회" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>JPA에서 DTO를 조회할 떄는 new 명령머 및 DTO의 패키지 이름까지 다 적고, 생성자 방식만 가능하다는 단점이 있음. Querydsl에서는 조회 결과를 DTO로 변환할떄 아래와 같은 3가지 방식을 지원함.</p><ul><li>프로퍼티 접근<li>필드 직접 접근<li>생성자 사용</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemberDto</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">MemberDto</span><span class="o">()</span> <span class="o">{</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="nf">MemberDto</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre><span class="c1">// setter를 이용한 프로퍼티 접근</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MemberDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="nc">Projections</span><span class="o">.</span><span class="na">bean</span><span class="o">(</span>
+    <span class="nc">MemberDto</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+
+<span class="c1">// 필드 직접 접근</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MemberDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="nc">Projections</span><span class="o">.</span><span class="na">fields</span><span class="o">(</span>
+    <span class="nc">MemberDto</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+
+<span class="c1">// 생성자 사용</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MemberDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="nc">Projections</span><span class="o">.</span><span class="na">constructor</span><span class="o">(</span>
+      <span class="nc">MemberDto</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+</pre></table></code></div></div><p>만약 다른 필드의 이름이 달라 별칭을 따로 사용해야 할경우 아래와 같이 사용 가능.</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDto</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">UserDto</span><span class="o">()</span> <span class="o">{</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="nf">UserDto</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="nc">QMember</span> <span class="n">memberSub</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">QMember</span><span class="o">(</span><span class="s">"memberSub"</span><span class="o">);</span>
+
+<span class="c1">// name 이라는 별칭 사용</span>
+<span class="c1">// 서브쿼리를 age라는 별칭으로 사용</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="nc">Projections</span><span class="o">.</span><span class="na">fields</span><span class="o">(</span>
+    <span class="nc">UserDto</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">"name"</span><span class="o">),</span>
+    <span class="nc">ExpressionUtils</span><span class="o">.</span><span class="na">as</span><span class="o">(</span>
+      <span class="nc">JPAExpressions</span>
+        <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="n">memberSub</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">max</span><span class="o">())</span>
+        <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">memberSub</span><span class="o">)</span>
+    <span class="o">,</span> <span class="s">"age"</span><span class="o">)))</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+</pre></table></code></div></div><ul><li>ExpressionUtils.as(source,alias)<ul><li>필드나, 서브 쿼리에 별칭 적용</ul><li>username.as(“memberName”)<ul><li>필드에 별칭 적용</ul></ul><h3 id="프로젝션과-결과-반환---queryprojection"><span class="mr-2">프로젝션과 결과 반환 - @QueryProjection</span><a href="#프로젝션과-결과-반환---queryprojection" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>생성자 + @QueryProjection 을 사용하는 방법</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MemberDto</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">MemberDto</span><span class="o">()</span> <span class="o">{</span>
+  <span class="o">}</span>
+
+  <span class="nd">@QueryProjection</span>
+  <span class="kd">public</span> <span class="nf">MemberDto</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="kt">int</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MemberDto</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="k">new</span> <span class="nc">QMemberDro</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+</pre></table></code></div></div><ul><li>DTO의 생성자에 @QueryProjection 선언후, 재빌드하여 Q파일을 생성해야 함<li>컴파일떄 타입 에러를 체크할 수 있으므로 안전한 방법<ul><li>기존 DTO 조회(setter, 필드, 생성자 세가지 방식)는 컴파일때 타입에러를 체크할 수 없고 런타임이에 에러 발생</ul><li>DTO에 QueryDSL 어노테이션으로 인하여 DTO가 QueryDSL에 의존하게 되어 아키텍처면으로 선택하기 어려울 떄가 있음</ul><h3 id="동적-쿼리"><span class="mr-2">동적 쿼리</span><a href="#동적-쿼리" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>동적 쿼리를 해결하기 위해 아래 두가지 방식이 존재</p><ul><li>BooleanBuilder<li>Where 다중 파라미터</ul><h4 id="booleanbuilder-사용-방식"><span class="mr-2">BooleanBuilder 사용 방식</span><a href="#booleanbuilder-사용-방식" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre><td class="rouge-code"><pre><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">dynamic_query</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="nc">String</span> <span class="n">usernameParam</span> <span class="o">=</span> <span class="s">"member1"</span><span class="o">;</span>
+  <span class="nc">Integer</span> <span class="n">ageParam</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">searchMember</span><span class="o">(</span><span class="n">usernameParam</span><span class="o">,</span> <span class="n">ageParam</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="nf">searchMember</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">BooleanBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BooleanBuilder</span><span class="o">();</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">username</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">builder</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="n">username</span><span class="o">));</span>
+  <span class="o">}</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">age</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">builder</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="n">age</span><span class="o">));</span>
+  <span class="o">}</span>
+
+  <span class="k">return</span> <span class="n">queryFactory</span>
+          <span class="o">.</span><span class="na">selectFrom</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="n">builder</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></table></code></div></div><h4 id="where-다중-파라미터-사용-방식"><span class="mr-2">Where 다중 파라미터 사용 방식</span><a href="#where-다중-파라미터-사용-방식" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre><td class="rouge-code"><pre><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">dynamic_query</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="nc">String</span> <span class="n">usernameParam</span> <span class="o">=</span> <span class="s">"member1"</span><span class="o">;</span>
+  <span class="nc">Integer</span> <span class="n">ageParam</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">searchMember</span><span class="o">(</span><span class="n">usernameParam</span><span class="o">,</span> <span class="n">ageParam</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="nf">searchMember</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">queryFactory</span>
+          <span class="o">.</span><span class="na">selectFrom</span><span class="o">(</span><span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">)</span>
+          <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="n">usernameEq</span><span class="o">(</span><span class="n">username</span><span class="o">),</span> <span class="n">ageEq</span><span class="o">(</span><span class="n">age</span><span class="o">))</span>
+          <span class="o">.</span><span class="na">fetch</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="nc">BooleanExpression</span> <span class="nf">usernameEq</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">username</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">username</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="n">username</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="nc">BooleanExpression</span> <span class="nf">ageEq</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">age</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="nc">QMember</span><span class="o">.</span><span class="na">member</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="n">age</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></table></code></div></div><ul><li>where 조건에 null 값은 무시됨<li>메소드를 다른 쿼리에서도 재활용 가능<li>쿼리 자체의 가독성이 높아짐</ul><p>아래와 같이 조합도 가능 함.</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="kd">private</span> <span class="nc">BooleanExpression</span> <span class="nf">allEq</span><span class="o">(</span><span class="nc">String</span> <span class="n">usernameCond</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">ageCond</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="nf">usernameEq</span><span class="o">(</span><span class="n">usernameCond</span><span class="o">).</span><span class="na">and</span><span class="o">(</span><span class="n">ageEq</span><span class="o">(</span><span class="n">ageCond</span><span class="o">));</span>
+<span class="o">}</span>
+</pre></table></code></div></div><ul><li>null 체크는 주의해서 처리해야 함</ul><h3 id="수정-삭제-벌크-연산"><span class="mr-2">수정, 삭제 벌크 연산</span><a href="#수정-삭제-벌크-연산" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>쿼리 한번으로 대량의 데이터 수정</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre><span class="c1">// 쿼리 한번으로 이름 수정</span>
+<span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">username</span><span class="o">,</span> <span class="s">"비회원"</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">lt</span><span class="o">(</span><span class="mi">28</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+
+<span class="c1">// 쿼리 한번으로 기존 숫자에 1 더하기</span>
+<span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">,</span> <span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+
+<span class="c1">// 쿼리 한번으로 대량 데이터 삭제</span>
+<span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="n">queryFactory</span>
+  <span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">member</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="n">member</span><span class="o">.</span><span class="na">age</span><span class="o">.</span><span class="na">gt</span><span class="o">(</span><span class="mi">18</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</pre></table></code></div></div><ul><li>JPQL의 배치와 마찬가지로 영속성 컨텍스트에 있는 엔티티를 무시하고 실행 되기 때문에 배치쿼리를 실행하고 나면 영속성 컨텍스트를 초기화 하는것이 안전함</ul><hr /><p>참고</p><ul><li>실전! Querydsl(김영한)</ul></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/backend/'>Backend</a>, <a href='/categories/querydsl/'>QueryDSL</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/web/" class="post-tag no-text-decoration" >Web</a> <a href="/tags/spring-framework/" class="post-tag no-text-decoration" >Spring Framework</a> <a href="/tags/database/" class="post-tag no-text-decoration" >DataBase</a> <a href="/tags/jpa/" class="post-tag no-text-decoration" >JPA</a> <a href="/tags/querydsl/" class="post-tag no-text-decoration" >QueryDSL</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=QueryDSL - 중급 문법 - My Technical Diary&amp;url=https://issuh.github.io/posts/spring-querydsl-02/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=QueryDSL - 중급 문법 - My Technical Diary&amp;u=https://issuh.github.io/posts/spring-querydsl-02/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/spring-querydsl-02/&amp;text=QueryDSL - 중급 문법 - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/spring-querydsl-01/"><div class="card-body"> <em class="timeago small" data-ts="1698802800" > 2023-11-01 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>QueryDSL - 기본 문법</h3><div class="text-muted small"><p> 기본 QTypq 활용 //별칭 직접 지정 QMember qMember = new QMember(&quot;m&quot;); //기본 인스턴스 사용 QMember qMember = QMember.member; //기본 인스턴스를 static import와 함께 사용 import static study.querydsl.entity.QMember.*; @Test ...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-01/"><div class="card-body"> <em class="timeago small" data-ts="1698022800" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 영속성 관리</h3><div class="text-muted small"><p> 영속성 컨텍스트 엔티티를 영구 저장하는 환경 영속성 컨텍스트는 눈에 보이지 않는 논리적인 개녕 엔티티 매니저를 통하여 영속성 컨텍스트에 접근 스프링 프레임워크의 컨테이너내에는 엔티티 매니저와 영속성 컨택스트가 N:1 관게로 이루어져 있음 엔티티의 생명주기 비영속(new/transient) 영속(menaged) 준영속(...</p></div></div></a></div><div class="card"> <a href="/posts/spring-jpa-02/"><div class="card-body"> <em class="timeago small" data-ts="1698039000" > 2023-10-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>JPA - 엔티티 매핑</h3><div class="text-muted small"><p> 엔티티 매핑 객체와 테이블 매핑 @Entity, @Table 필드와 컬럼 매핑 @Column 기본 키 매핑 @Id 연관관계 매핑 @ManyToOne, @JoinColumn 객체와 테이블 매핑 @...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/spring-querydsl-01/" class="btn btn-outline-primary" prompt="Older"><p>QueryDSL - 기본 문법</p></a> <a href="/posts/java-02/" class="btn btn-outline-primary" prompt="Newer"><p>Java - ThreadLocal</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>

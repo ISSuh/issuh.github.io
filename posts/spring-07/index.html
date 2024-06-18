@@ -1,0 +1,341 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="Spring Framework - 의존관계 자동 주입" /><meta property="og:locale" content="en" /><meta name="description" content="다양한 의존관계 주입 방법 의존관계 주입은 아래와 같이 크게 4가지가 존재 생성자 주입 수정자 주입(setter 주입) 필드 주입 일반 메서드 주입" /><meta property="og:description" content="다양한 의존관계 주입 방법 의존관계 주입은 아래와 같이 크게 4가지가 존재 생성자 주입 수정자 주입(setter 주입) 필드 주입 일반 메서드 주입" /><link rel="canonical" href="https://issuh.github.io/posts/spring-07/" /><meta property="og:url" content="https://issuh.github.io/posts/spring-07/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2023-10-11T15:30:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="Spring Framework - 의존관계 자동 주입" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-11-02T12:17:17+09:00","datePublished":"2023-10-11T15:30:00+09:00","description":"다양한 의존관계 주입 방법 의존관계 주입은 아래와 같이 크게 4가지가 존재 생성자 주입 수정자 주입(setter 주입) 필드 주입 일반 메서드 주입","headline":"Spring Framework - 의존관계 자동 주입","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/spring-07/"},"url":"https://issuh.github.io/posts/spring-07/"}</script><title>Spring Framework - 의존관계 자동 주입 | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>Spring Framework - 의존관계 자동 주입</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>Spring Framework - 의존관계 자동 주입</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1697005800" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2023-10-11 </em> </span> <span> Updated <em class="timeago" data-ts="1698895037" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2023-11-02 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="3282 words"> <em>18 min</em> read</span></div></div></div><div class="post-content"><h3 id="다양한-의존관계-주입-방법"><span class="mr-2">다양한 의존관계 주입 방법</span><a href="#다양한-의존관계-주입-방법" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>의존관계 주입은 아래와 같이 크게 4가지가 존재</p><ul><li>생성자 주입<li>수정자 주입(setter 주입)<li>필드 주입<li>일반 메서드 주입</ul><h4 id="생성자-주입"><span class="mr-2">생성자 주입</span><a href="#생성자-주입" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>생성자를 통해 의존관계를 주입 받는 방법<li>생성자 호출시점에 딱 1번만 호출되는 것이 보장됨<li><strong>불변</strong>, <strong>필수</strong> 의존관계에서 사용</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>  <span class="c1">// 생성자가 하나뿐 이므로 생략 가능 </span>
+    <span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">,</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p><strong>생성자가 딱 1개만 있으면 @Autowired를 생략해도 자동 주입이 가능 함</strong>. 스프링 빈에만 해당됨</p><h4 id="수정자-주입setter-주입"><span class="mr-2">수정자 주입(setter 주입)</span><a href="#수정자-주입setter-주입" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>setter 라 불리는 필드의 값을 변경하는 수정자 메서드를 통하여 의존관계를 주입하는 방법<li><strong>선택</strong>, <strong>변경</strong> 가능성이 있는 의존관계에 사용<li>자바의 프로퍼티 규약의 수정자 메서드 방식을 사용하는 방법임</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre><td class="rouge-code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMemberRepository</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDiscountPolicy</span><span class="o">(</span><span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><blockquote><p>@Autowired 의 기본 동작은 주입할 대상이 없으면 오류가 발생함. 주입할 대상이 없어도 동작하게 하려면 @Autowired(required = false) 로 지정</p></blockquote><blockquote><p>자바빈 프로퍼티, 자바에서는 과거로부터 필드의 값을 직접 변경하지 않고, setXxx, getXxx 라는 메서드를 통해 값을 읽거나 수정하는 규칙이 있는데 그것이 자바빈 프로퍼티 규약임</p></blockquote><h4 id="필드-주입"><span class="mr-2">필드 주입</span><a href="#필드-주입" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>필드에 바로 주입하는 방법<li>외부에서 변경이 불가능 하기 때문에 테스트하기 어려움<li>DI 프레임워크가 없다면 아무것도 할 수 없음<li>되도록이면 사용하지 않을것</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+ 
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></table></code></div></div><h4 id="일반-메서드-주입"><span class="mr-2">일반 메서드 주입</span><a href="#일반-메서드-주입" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>일반 메서드를 통해 주입 받는 방법<li>한번에 여러 필드를 주입 받을수 있음<li>일반적으로는 잘 사용하지 않는 방식</ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">,</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><blockquote><p>의존관계 자동 주입은 스프링 컨테이너가 관리하는 스프링 빈 이여야만 동작함</p></blockquote><h3 id="옵션-처리"><span class="mr-2">옵션 처리</span><a href="#옵션-처리" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>주입할 스프링 빈이 없다고 하더라도 동작해야 할 때가 있음 그러나 @Autowired만 사용한다면 required 옵션의 기본값이 true로 되어 있어 자동 주입 대상이 없다면 오류가 발생</p><p>자동 주입 대상을 옵션으로 처리하는 방법은 아래와 같음</p><ul><li>@Autowired(required=false)<ul><li>자동 주입할 대상이 없다면 수정자 메서드 자체가 호출 안됨</ul><li>org.springframework.lang.@Nullable<ul><li>자동 주입할 대상이 없으면 null이 입력됨</ul><li>Optional&lt;&gt;<ul><li>자동 주입할 대상이 없으면 Optional.empty가 입력됨</ul></ul><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre><td class="rouge-code"><pre><span class="c1">//호출 안됨</span>
+<span class="nd">@Autowired</span><span class="o">(</span><span class="n">required</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setNoBean1</span><span class="o">(</span><span class="nc">Member</span> <span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"setNoBean1 = "</span> <span class="o">+</span> <span class="n">member</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">//null 호출</span>
+<span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setNoBean2</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="nc">Member</span> <span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"setNoBean2 = "</span> <span class="o">+</span> <span class="n">member</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">//Optional.empty 호출</span>
+<span class="nd">@Autowired</span><span class="o">(</span><span class="n">required</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setNoBean3</span><span class="o">(</span><span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Member</span><span class="o">&gt;</span> <span class="n">member</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"setNoBean3 = "</span> <span class="o">+</span> <span class="n">member</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><div class="language-plaintext highlighter-rouge"><div class="code-header"> <span data-label-text="Plaintext"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre># setNoBean1 은 @Autowired(required=false) 이므로 아예 호출이 안됨 
+setNoBean2 = null
+setNoBean3 = Optional.empty
+</pre></table></code></div></div><blockquote><p>@Nullable, Optional은 스프링 전반에 걸쳐서 지원함. 예를 들어 생성자 자동 주입에서 특정 필드에만 사용하는 것도 가능</p></blockquote><h3 id="생성자-주입을-선택해라"><span class="mr-2">생성자 주입을 선택해라</span><a href="#생성자-주입을-선택해라" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>과거에는 수정자 주입과 필드 주입을 많이 사용했지만 최근에는 스프링을 포함한 DI 프레임워크 대부분이 생성자 주입을 권장함 그 이유에 대해선 아래와 같음</p><h4 id="불변"><span class="mr-2"><strong>불변</strong></span><a href="#불변" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>대부분의 의존관계 주입은 한번 일어나면 어플리케이션 종료시점까지 의존관계를 변경할 일이 없음<ul><li>오히려 대부분의 경우, 의존관계는 어플리케이션 종료 전까지 변하면 안됨(불변이여야 함)</ul><li>수정자 주입을 사용하면 setXxx 메서드를 public으로 열어두어야 함<li>생성자 주입은 객체를 생성할떄 1번만 호출되므로 이후에는 호출될 일이 없음. 그러므로 불변으로 설계할 수 있음</ul><h4 id="누락"><span class="mr-2"><strong>누락</strong></span><a href="#누락" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>프레임워크 없이 순수 자바 코드를 단위 테스트 하는 경우에 다음과 같이 수정자 의존관계인 경우</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+    
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMemberRepository</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDiscountPolicy</span><span class="o">(</span><span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="o">...</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>아래와 같이 테스트를 수행하면 동작은 함</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="nd">@Test</span>
+<span class="kt">void</span> <span class="nf">createOrder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">OrderServiceImpl</span> <span class="n">orderService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderServiceImpl</span><span class="o">();</span>
+    <span class="n">orderService</span><span class="o">.</span><span class="na">createOrder</span><span class="o">(</span><span class="mi">1L</span><span class="o">,</span> <span class="s">"itemA"</span><span class="o">,</span> <span class="mi">10000</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>그러나 테스트 수행 결과는 Null Point Exception이 발생하는데, memberRepository, discountPolicy 모두 의존관계 주입이 누락되었기 때문임.</p><p>생성자 주입을 사용하면 위와 같이 주입 데이터가 누락 되었을때는 컴파일 오류가 발생하여 바로 오류 확인이 가능함</p><h4 id="final-키워드"><span class="mr-2">final 키워드</span><a href="#final-키워드" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>생성자 주입을 사용하면 필드에 final 키워드를 사용할 수 있음 그러므로 생성자에서 혹시라도 값이 설정되지 않는 오류를 컴파일 시점에 확인 할 수 있음</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="nc">Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">,</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+
+        <span class="c1">// discountPolicy 필드는 final 이므로 값 설정이 필수이지만 누락되어 컴파일 오류 발생</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><blockquote><p>수정자 주입을 포함한 다른 나머지 주입 방식은 모두 생성자 이후에 호출되므로 필드에 final 키워드를 사용할 수 없음. 오직 생성자 주입 방식만 final 키워드를 사용 할 수 있음</p></blockquote><h4 id="정리"><span class="mr-2">정리</span><a href="#정리" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>기본적으로 생성자 주입을 사용하고, 필수 값이 아닌 경우에는 수정자 주입 방식을 옵션으로 부여하면 됨<ul><li>생성자 주입과 수정자 주입을 동시에 사용할 수 있음(final 이 아닌 경우)</ul><li>되도록이면 항상 생성자 주입을 선택하도록 하고 가끔 옵션이 필요할때 수정자 주입을 선택하면 됨<ul><li>필드 주입은 테스트와 같이 특정한 상황이 아니면 사용하지 않을 것</ul></ul><h3 id="조회-빈이-2개-이상일때"><span class="mr-2">조회 빈이 2개 이상일때</span><a href="#조회-빈이-2개-이상일때" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>@Autowired는 타입으로 조회를 함 그러므로 선책된 빈이 2개 이상일때 문제가 발생하게 됨</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FixDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span>
+</pre></table></code></div></div><p>위와 같이 fixDiscountPolicy, rateDiscountPolicy 두개의 후보가 존재하게 되므로 UniqueBeanDefinitionException 오류가 발생하게 됨</p><div class="language-plaintext highlighter-rouge"><div class="code-header"> <span data-label-text="Plaintext"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>NoUniqueBeanDefinitionException: No qualifying bean of type 
+'hello.core.discount.DiscountPolicy' available: expected single matching bean 
+but found 2: fixDiscountPolicy,rateDiscountPolicy
+</pre></table></code></div></div><p>위와 같은 상황일 떄 하위 타입(구현클래스)로 지정할 수도 있지만 하위 타입으로 지정하는 것은 DIP에 위배하고 유연성을 떨어지게 만듬 또한 이름만 다르고 똑같은 타입의 스프링 빈이 2개 이상 있을때는 해결되지 않음</p><h4 id="autowired-필드-명-qualifier-primary"><span class="mr-2">@Autowired 필드 명, @Qualifier, @Primary</span><a href="#autowired-필드-명-qualifier-primary" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>조회 대상 빈이 2개 이상일 떄 크게 아래와 같이 3가지 방법으로 해결이 가능함</p><ul><li>@Autowired 필드 명<li>@Qualifier -&gt; @Qualifier끼지 매칭 -&gt; 빈 이름 매칭<li>@Primary</ul><h5 id="autowired-필드-명-매칭"><span class="mr-2">@Autowired 필드 명 매칭</span><a href="#autowired-필드-명-매칭" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5></h5><p>@Autowired는 타입 매칭을 시도하고, 이떄 여러 빈이 있다면 필드 이름, 파라미터 이름으로 빈 이름을 추가 매칭함</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="c1">// 기존 코드</span>
+<span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span>
+
+<span class="c1">// 필드 명을 빈 이름으로 변경</span>
+<span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">DiscountPolicy</span> <span class="n">rateDiscountPolicy</span>
+</pre></table></code></div></div><p><strong>필드 명 매칭은 먼저 타입 매칭을 시도하고 그 결과에 여러 빈이 있을때 추가로 동작하는 기능</strong></p><h5 id="qualifier-사용"><span class="mr-2">@Qualifier 사용</span><a href="#qualifier-사용" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5></h5><p>@Qualifier는 추가 구분자를 붙여주는 방법 주입시 추가적인 방법을 제공하는 것이지 빈 이름을 변경하는 것은 아님</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="nc">Component</span>
+<span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"mainDiscountPolicy"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+
+<span class="nd">@Component</span>
+<span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"fixDiscountPolicy"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FixDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+</pre></table></code></div></div><p><strong>주입시에 @Qualifier를 붙여주고 등록한 이름을 적어줌</strong></p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="c1">// 생성자 자동 주입 예시</span>
+<span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">,</span> <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"mainDiscountPolicy"</span><span class="o">)</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="c1">// 수정자 자동 주입 예시</span>
+<span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="nc">DiscountPolicy</span> <span class="nf">setDiscountPolicy</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"mainDiscountPolicy"</span><span class="o">)</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>다음과 같이 직접 빈 등록시에도 @Qualifier를 동일하게 사용 가능</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="nd">@Bean</span>
+<span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"mainDiscountPolicy"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">DiscountPolicy</span> <span class="nf">discountPolicy</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="o">...</span>
+<span class="o">}</span>
+</pre></table></code></div></div><h5 id="primary"><span class="mr-2">@Primary</span><a href="#primary" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h5></h5><p>@Primary는 우선순위를 정하는 방법 @Autowired 시에 여러 빈이 매칭된다면 @Primary가 우선권을 가지게 됨</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="c1">// RateDiscountPolicy 가 FixDiscountPolicy 보다 우선권을 가지게 됨</span>
+<span class="nd">@Component</span>
+<span class="nd">@Primary</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FixDiscountPolicy</span> <span class="kd">implements</span> <span class="nc">DiscountPolicy</span> <span class="o">{}</span>
+</pre></table></code></div></div><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="c1">// 생성자 자동 주입 예시</span>
+<span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="nf">OrderServiceImpl</span><span class="o">(</span><span class="nc">MemberRepository</span> <span class="n">memberRepository</span><span class="o">,</span> <span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">memberRepository</span> <span class="o">=</span> <span class="n">memberRepository</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="c1">// 수정자 자동 주입 예시</span>
+<span class="nd">@Autowired</span>
+<span class="kd">public</span> <span class="nc">DiscountPolicy</span> <span class="nf">setDiscountPolicy</span><span class="o">(</span><span class="nc">DiscountPolicy</span> <span class="n">discountPolicy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">discountPolicy</span> <span class="o">=</span> <span class="n">discountPolicy</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></table></code></div></div><h4 id="우선순위"><span class="mr-2">우선순위</span><a href="#우선순위" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>스프링은 자동보다 수동이, 넓은 범위보다 좁은 범위의 선택권이 더 우선권이 높음. 그러므로 @Primary 보다 @Qualifuer가 더 우선권이 높음</p><h3 id="자동-수동의-올바른-실무-운영"><span class="mr-2">자동, 수동의 올바른 실무 운영</span><a href="#자동-수동의-올바른-실무-운영" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>최근 추세에서는 점점 자동 등록을 사용하고 있음. 스프링은 @Component 뿐만 아니라 @Controller, @Service, @Repository 처럼 계층에 맞추어 일반적인 어플리케이션 로직을 자동으로 스캔 할 수 있도록 지원함. 추가적으로 스프링 부트는 컴포넌트 스캔을 기본으로 사용하고 있으며 스프링 부트의 다양한 스프링 빈들도 조건이 맞으면 자동으로 등록되어 지도록 설계되어 있음</p><h4 id="수동-빈-등록이-사용되면-좋은-경우"><span class="mr-2">수동 빈 등록이 사용되면 좋은 경우</span><a href="#수동-빈-등록이-사용되면-좋은-경우" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>어플리케이션은 크게 업무로직과 기술로직 두가지 로직으로 나누어 질수 있음</p><ul><li><strong>업무로직</strong><ul><li>웹을 지원하는 컨트롤러, 핵식 비지니스 로직이 있는 서비스, 데이터 계층의 로직을 처리하는 리포지터리등이 모두 업무로직<li>보통 비지니스 요구사항을 개발할떄 추가되거나 변경됨<li>개발시 컨트롤러, 서비스, 리포지토리 처럼 유사한 패턴이 존재<li>보통 문제가 발생하더라도 어느 부분이 문제인지 명확하게 나타남<li>그러므로 <strong>자동 빈 등록</strong> 을 사용하여도 무방함</ul><li><strong>기술로직</strong><ul><li>기술적인 문제나 공통 관심사(AOP)를 처리할 때 주로 사용됨<li>데이터베이스 연결, 공통 로그처리등 업무로직을 지원하기 위한 하부기술이나 공통 기술 임<li>기술로직은 어플리케이션 전반에 걸쳐 광범위 하게 영향을 미치므로 문제 발생시 정확한 포인트를 찾기가 어려움<li>이러한 광범위하게 사용되는 기술로직의 경우 가급적 <strong>수동 빈 등록</strong>을 사용하여 명확하게 드러내는 것이 좋음</ul></ul><p>추가적으로 비지니스로직중에서 다형성을 적극 활용하는 경우에는 수동 빈 등록을 사용하거나 특정 패키지에 같이 묶어두는것이 좋음. 그렇게 하면 어떠한 빈들이 주입되는지 바로 확인이 가능 하기 떄문에 유지보수의 이점이 있음</p><div class="language-java highlighter-rouge"><div class="code-header"> <span data-label-text="Java"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DiscountPolicyConfig</span> <span class="o">{</span>
+    
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">DiscountPolicy</span> <span class="nf">rateDiscountPolicy</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RateDiscountPolicy</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">DiscountPolicy</span> <span class="nf">fixDiscountPolicy</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">FixDiscountPolicy</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><blockquote><p>스프링과 스프링 부트가 자동으로 등록하는 수 많은 빈들은 예외이고 반면에 내가 직접 기술지원객체를 스프링 빈으로 등록한다면 수동으로 등록하여 명확하게 드러내는 편이 좋음</p></blockquote><h4 id="정리-1"><span class="mr-2">정리</span><a href="#정리-1" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>되도록이면 편리한 자동 기능을 사용하도록 함<li>직접 등록하는 기술 지원 객체는 수동 등록<li>다형성을 적극 활용하는 비지니스 로직은 별도의 패키지에 몰아 넣거나 수동 등록을 고민해보면 좋음</ul><hr /><p>참고</p><ul><li>스프링 핵심 원리 - 기본편(김영한)</ul></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/backend/'>Backend</a>, <a href='/categories/spring-framework/'>Spring Framework</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/web/" class="post-tag no-text-decoration" >Web</a> <a href="/tags/spring-framework/" class="post-tag no-text-decoration" >Spring Framework</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Spring Framework - 의존관계 자동 주입 - My Technical Diary&amp;url=https://issuh.github.io/posts/spring-07/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Spring Framework - 의존관계 자동 주입 - My Technical Diary&amp;u=https://issuh.github.io/posts/spring-07/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/spring-07/&amp;text=Spring Framework - 의존관계 자동 주입 - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/spring-01/"><div class="card-body"> <em class="timeago small" data-ts="1696896300" > 2023-10-10 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Spring Framework - 객체 지향 설계와 스프링</h3><div class="text-muted small"><p> 스프링이란? 여러가지 기술(모듈)들의 집합 스프링 데이터, 스프링 세션, 스프링 시큐리티 등등 Spring Framework 핵심 기술 : 스프링 DI 컨테이너, AOP, 이벤트, 기타 웹 기술 : 스프링 MVC, 스프링 WebFlux 데이터 접근 기술 : 트랜잭션, JDBC, ORM 지원, X...</p></div></div></a></div><div class="card"> <a href="/posts/spring-02/"><div class="card-body"> <em class="timeago small" data-ts="1696905600" > 2023-10-10 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Spring Framework - 핵심 원리 이해(예제 만들기)</h3><div class="text-muted small"><p> 요구사항과 설계 회원 도메인 요구사항 회원가입 및 조회 회원은 일반, VIP 두가지 유형이 존재 회원 데이터는 자체 DB를 구축할 수 있거나 외부 시스템과 연동될수도 있음(미확정) 회원 도메인 협력 관계 회원 클래스 다이어그램 회원 객체 다이어그램 회원 도메인 설계의 문제점 다른 저장소로 변경할떄 OCP 를 준수하는지?...</p></div></div></a></div><div class="card"> <a href="/posts/spring-03/"><div class="card-body"> <em class="timeago small" data-ts="1696920000" > 2023-10-10 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Spring Framework - 핵심 원리 이해</h3><div class="text-muted small"><p> IoC, DI, 컨테이너 IoC(Inversion of Control) - 제어의 역전 기존 프로그램은 클라이언트 구현 객체가 스스로 필요한 서버 구현 객체를 생성하고, 연결하고 실행함 즉 구현 객체가 프로그램의 제어 흐름을 스스로 조종했음 반면에 AppConfig(DI를 위한 configure class....</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/spring-06/" class="btn btn-outline-primary" prompt="Older"><p>Spring Framework - 컴포넌트 스캔</p></a> <a href="/posts/spring-08/" class="btn btn-outline-primary" prompt="Newer"><p>Spring Framework - 빈 생명주기 콜백</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>
