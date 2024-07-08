@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="Design Patterns - Prototype" /><meta property="og:locale" content="en" /><meta name="description" content="Creational Patterns - Prototype" /><meta property="og:description" content="Creational Patterns - Prototype" /><link rel="canonical" href="https://issuh.github.io/posts/design_patterns-prototype/" /><meta property="og:url" content="https://issuh.github.io/posts/design_patterns-prototype/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2020-04-12T00:04:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="Design Patterns - Prototype" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-03-05T12:33:07+09:00","datePublished":"2020-04-12T00:04:00+09:00","description":"Creational Patterns - Prototype","headline":"Design Patterns - Prototype","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/design_patterns-prototype/"},"url":"https://issuh.github.io/posts/design_patterns-prototype/"}</script><title>Design Patterns - Prototype | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>Design Patterns - Prototype</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>Design Patterns - Prototype</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1586617440" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2020-04-12 </em> </span> <span> Updated <em class="timeago" data-ts="1646451187" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2022-03-05 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="2257 words"> <em>12 min</em> read</span></div></div></div><div class="post-content"><h1 id="creational-patterns---prototype">Creational Patterns - Prototype</h1><h2 id="intent"><span class="mr-2">Intent</span><a href="#intent" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p>원형이 되는 인스턴스를 사용하여 생성할 객체의 종류를 명시하고, 이렇게 만든 견본을 복사해서 새로운 객체를 생성한다.</p><h2 id="utility"><span class="mr-2">Utility</span><a href="#utility" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li>인트턴스화할 클래스를 런타임에 지정할(동적 로딩) 떄<li>제품 클래스 계통과 병렬적으로 만드는 <em>Factory Class</em> 피하고 싶을때<li>클래스의 인스턴스들이 서로 다른 상태 조합을 사용하고 있어, 그중 하나를 선택 할 떄</ul><h2 id="structure"><span class="mr-2">Structure</span><a href="#structure" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><h3 id="basic-structure"><span class="mr-2">Basic Structure</span><a href="#basic-structure" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><img data-src="https://online.visual-paradigm.com/repository/images/0a669ff5-a4b9-4a6c-8c57-5c923f27f1d4.png" alt="example" data-proofer-ignore></p><h3 id="structure-example"><span class="mr-2">Structure Example</span><a href="#structure-example" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><img data-src="https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/proto019.gif" alt="example" data-proofer-ignore></p><h3 id="elements"><span class="mr-2">Elements</span><a href="#elements" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><strong>Prototype</strong><ul><li><em>Graphic</em>에 해당<li>자신을 복제하는 데 필요한 인터페이스를 정의</ul><li><strong>ConcretePrototype</strong><ul><li><em>Staff</em>, <em>WholeNote</em>, <em>HalfNote</em>에 해당<li>자신을 복제하는 연산(인터페이스)을 구현</ul><li><strong>Client</strong><ul><li><em>GraphicTool</em>에 해당<li><em>Prototype</em>에 자기 자신의 복제를 요청하여 새로운 객체를 생성</ul></ul><p>사용자는 <em>Prototype</em> 클래스에 스스로를 복제하도록 요청해야 한다.</p><h2 id="feature"><span class="mr-2">Feature</span><a href="#feature" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p><em>Prototype Pattern</em>을 사용할 떄 가장 신경써야 하는 점은, <em>Prototype</em>의 서브클래스가 <em>Clone()</em> 연산을 구현해야 한다는 점이다. 예를들어, 패턴을 적용할 클래스가 이미 만들어진 경우 <em>Clone()</em> 연산을 추가하기가 어려워 진다. 또한 복사를 지원하지 않거나 <strong>환형 참조(Circular Reference)</strong> 가 없는 객체를 포함한다면 <em>Clone()</em> 연산의 구현은 매우 어려워 지기 때문에 <em>Prototype Pattern</em> 의 적용이 어려워 진다.</p><h3 id="런타임에-새로운-제품을-추가하고-삭제할수-있다"><span class="mr-2">런타임에 새로운 제품을 추가하고 삭제할수 있다</span><a href="#런타임에-새로운-제품을-추가하고-삭제할수-있다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><em>Prototype Pattern</em>을 이용하면 사용자에게 <em>Prototype</em>으로 생산되는 인스턴스를 등록하는 것만으로도 시스템에 새로운 제품 클래스를 추가할 수 있게 된다.</p><p>런타임에 새로운 <em>Prototype</em>을 넣고 빼기가 쉽다는 점에서 다른 생성패턴에 비해 유연성을 지니고 있다.</p><h4 id="값들을-다양화-함으로써-새로운-객체를-명세한다"><span class="mr-2">값들을 다양화 함으로써 새로운 객체를 명세한다</span><a href="#값들을-다양화-함으로써-새로운-객체를-명세한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Prototype Pattern</em>은 사용자와 동작할 <em>Prototype</em>에 해당하는 기존 클래스의 인스턴스를 만들어서 그 인스턴스를 등록하면, 사용자는 이 <em>Prototype</em>에 정의된 행동이 수행되어 마치 새로운 행동이 정의된 듯한 결과를 얻게 된다.</p><p><em>Prototype</em>을 복제하는 것은 클래스의 인스턴스를 만드는 것과 동일하기 때문에 <em>Prototype Pattern</em>은 시스템에 필요한 객체를 생성하기 위해 정의할 클래스의 수를 대폭 줄여주는 효과가 있다.</p><h3 id="구조를-다양화-함으로써-새로운-객체를-명세할-수-있다"><span class="mr-2">구조를 다양화 함으로써 새로운 객체를 명세할 수 있다</span><a href="#구조를-다양화-함으로써-새로운-객체를-명세할-수-있다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>세부 구성요소를 <em>Prototype</em>으로 만들어, 이것을 현재 사용 가능한 구성요소 관리자에 등록한다. 이후, 세부 구성요소를 가지는 복합객체에서 <em>Clone()</em> 연산을 구현함으로써 다른 구조를 가지는 객체의 기본 골격을 만든다. 이렇게 함으로써 복잡한 사용자 정의 구조를 사용자가 인스턴스화 하여 그 상황에 맞는 세부 구성요소를 이용할 수 있도록 한다.</p><h3 id="서브클래스의-수를-줄인다"><span class="mr-2">서브클래스의 수를 줄인다</span><a href="#서브클래스의-수를-줄인다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><em>Factory Method Pattern</em>를 보면 <em>Creator</em> 클래스의 계통이 제품 관련 클래스의 계통과 병렬로 복합되어 진다.</p><p><em>Prototype Pattern</em>에서는 <em>Factory Method</em>에게 새로운 객체를 만들어 달라고 요청하는 것이 아니라 <em>Prototype</em>을 복제하는 것이므로, <em>Creator</em> 클래스에 따른 새로운 상속 계층이 필요없다.</p><h3 id="동적으로-클래스에-따라-응용프로그램을-설정할-수-있다"><span class="mr-2">동적으로 클래스에 따라 응용프로그램을 설정할 수 있다</span><a href="#동적으로-클래스에-따라-응용프로그램을-설정할-수-있다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>몇몇 런타임 환경에서는 동적으로 클래스들을 응용프로그램으로 등록할 수 있도록 해준다.</p><p>동적으로 로드된 클래스의 인스턴스를 생성하고 싶은 응용프로그램은 정적으로 그 클래스의 생성자를 참조할 수 없다. 그 대신 런타임 환경이 그 클래스의 인스턴스를 자동으로 생성하고 <em>Prototype Manager</em> 에게 등록한다. 이후 응용프로그램이 이 <em>Prototype Manager</em>에게서 필요한 클래스의 인스턴스를 얻게된다.</p><h2 id="implementation"><span class="mr-2">Implementation</span><a href="#implementation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><h3 id="prototype-manager를-사용한다"><span class="mr-2"><em>Prototype Manager</em>를 사용한다</span><a href="#prototype-manager를-사용한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>사용자는 <em>Prototype</em> 자체를 다루지 않고, <em>Prototype Manager</em>에서 <em>Prototype</em>을 검색하고 그것을 복제하여 사용한다.</p><p><em>Prototype Manager</em>는 어떤 키에 부합되는 <em>Prototype</em>을 저장하고, 찾아서 반환하며, 삭제하는 기능을 담당하는 저장소이다.</p><h3 id="clone-연산을-구현한다"><span class="mr-2"><em>Clone()</em> 연산을 구현한다</span><a href="#clone-연산을-구현한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>구조가 복잡한 <em>Prototype</em>을 복제할 때는 대개 <strong>깊은 복사(Deep Copy)</strong> 가 필요하다. 사본과 원본이 독립적일 수 있어야 하기 때문이다. 그러므로 <em>Clone()</em> 연산을 구현 할 때는 무엇을 복사하고, 무엇을 공유하도록 할 것인지 결정해야 한다.</p><h3 id="clone-연산을-초기화-한다"><span class="mr-2"><em>Clone()</em> 연산을 초기화 한다</span><a href="#clone-연산을-초기화-한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p>어떤 사용자는 내부 상태를 자신이 선택한 값으로 초기화하기를 바랄것이다. 일반적으로 이런 값은 <em>Clone()</em> 연산에 넘길 수 없다. 왜냐하면 <em>Prototype</em> 클래스마다 필요한 매개변수와 개수가 천차만별이기 때문이다.</p><p><em>Prototype</em> 클래스의 상태를 설정하기 위한 연산이나, 상태를 초기화 해주는 연산을 제공해 주어야 한다. 이러한 연산은 초기화 매개변수를 인자로받아 그 복제본의 내부 상태를 설정한다. 이때 깊은 복사를 수행하는 <em>Clone()</em> 연산이 있기떄문에, 사본을 재초기화 하기 전에 사본을 삭제해야 할 수도 있다.</p><h3 id="implement-example"><span class="mr-2">Implement Example</span><a href="#implement-example" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+</pre><td class="rouge-code"><pre><span class="cm">/**
+* @brief Prototype - MousePointer
+*/</span>
+<span class="k">class</span> <span class="nc">MousePointer</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">MousePointer</span><span class="p">()</span> <span class="p">{}</span>
+
+  <span class="c1">// Prototype의 설정, 복제를 위한 인터페이스 선언</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="k">const</span> <span class="n">Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">MousePointer</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="nl">private:</span>
+  <span class="n">Point</span> <span class="n">m_point</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief Prototype - Button
+*/</span>
+<span class="k">class</span> <span class="nc">Button</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">Button</span><span class="p">()</span> <span class="p">{}</span>
+
+  <span class="c1">// Prototype의 설정, 복제를 위한 인터페이스 선언</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">Button</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="nl">private:</span>
+  <span class="kt">int</span> <span class="n">m_id</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcretePrototype - MousePointer
+*/</span>
+<span class="k">class</span> <span class="nc">WINMousePointer</span> <span class="o">:</span> <span class="k">public</span> <span class="n">MousePointer</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="c1">// 깊은 복사를 위한 복사생성자 정의</span>
+  <span class="n">WINMousePointer</span><span class="p">(</span><span class="k">const</span> <span class="n">WINMousePointer</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">){</span> 
+    <span class="n">m_point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_point</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_point</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype의 설정 인터페이스 정의</span>
+  <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="k">const</span> <span class="n">Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">point</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">point</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype의 복제 인터페이스 정의</span>
+  <span class="n">MousePointer</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">WINMousePointer</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">}</span>  
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcretePrototype - MousePointer
+*/</span>
+<span class="k">class</span> <span class="nc">OSXMousePointer</span> <span class="o">:</span> <span class="k">public</span> <span class="n">MousePointer</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="c1">// 깊은 복사를 위한 복사생성자 정의</span>
+  <span class="n">OSXMousePointer</span><span class="p">(</span><span class="k">const</span> <span class="n">OSXMousePointer</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">){</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_point</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_point</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype의 설정 인터페이스 정의</span>
+  <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="k">const</span> <span class="n">Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">point</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">m_point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">point</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype의 복제 인터페이스 정의</span>
+  <span class="n">MousePointer</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">OSXMousePointer</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcretePrototype - Button
+*/</span>
+<span class="k">class</span> <span class="nc">WINButton</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Button</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="c1">// 깊은 복사를 위한 복사생성자 정의</span>
+  <span class="n">WINButton</span><span class="p">(</span><span class="k">const</span> <span class="n">OSXButton</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">){</span> <span class="n">m_id</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_id</span><span class="p">;</span> <span class="p">}</span>
+
+  <span class="c1">// Prototype의 설정, 복제 인터페이스 정의</span>
+  <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span> <span class="n">m_id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span> <span class="p">}</span>
+  <span class="n">Button</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="k">new</span> <span class="n">WINButton</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcretePrototype - Button
+*/</span>
+<span class="k">class</span> <span class="nc">OSXButton</span><span class="o">:</span> <span class="k">public</span> <span class="n">Button</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="c1">// 깊은 복사를 위한 복사생성자 정의</span>
+  <span class="n">OSXButton</span><span class="p">(</span><span class="k">const</span> <span class="n">OSXButton</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">){</span> <span class="n">m_id</span> <span class="o">=</span> <span class="n">rhs</span><span class="p">.</span><span class="n">m_id</span><span class="p">;</span> <span class="p">}</span>
+
+  <span class="c1">// Prototype의 설정, 복제 인터페이스 정의</span>
+  <span class="kt">void</span> <span class="n">initailize</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span> <span class="n">m_id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span> <span class="p">}</span>
+  <span class="n">Button</span><span class="o">*</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="k">new</span> <span class="n">OSXButton</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief Prototype Factory for Client
+*/</span>
+<span class="k">class</span> <span class="nc">UIPrototypeFactory</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">UIPrototypeFactory</span><span class="p">(</span><span class="n">OS_TYPE</span> <span class="n">type</span><span class="p">){</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">type</span><span class="p">){</span>
+      <span class="k">case</span> <span class="n">OS_WIN</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">m_prototypeMousePointer</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">MousePointer</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">WINMousePointer</span><span class="p">());</span>
+        <span class="n">m_prototypeMousePointer</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">Button</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">WINButton</span><span class="p">());</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">case</span> <span class="n">OS_OSX</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">m_prototypeMousePointer</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">MousePointer</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">OSXMousePointer</span><span class="p">());</span>
+        <span class="n">m_prototypeMousePointer</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">Button</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">OSXButton</span><span class="p">());</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype 기반</span>
+  <span class="k">virtual</span> <span class="n">MousePointer</span><span class="o">*</span> <span class="n">createMousePointer</span><span class="p">(</span><span class="k">const</span> <span class="n">Point</span><span class="o">&amp;</span> <span class="n">point</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="n">MousePointer</span><span class="o">*</span> <span class="n">mpt</span> <span class="o">=</span> <span class="n">m_prototypeMousePointer</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">();</span>
+    <span class="n">mpt</span><span class="o">-&gt;</span><span class="n">initailize</span><span class="p">(</span><span class="n">point</span><span class="p">);</span>
+    <span class="k">new</span> <span class="n">mpt</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prototype 기반</span>
+  <span class="k">virtual</span> <span class="n">Button</span><span class="o">*</span> <span class="n">createButton</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="n">Button</span><span class="o">*</span> <span class="n">btn</span> <span class="o">=</span> <span class="n">m_prototypeButton</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">();</span>
+    <span class="n">btn</span><span class="o">-&gt;</span><span class="n">initailize</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+    <span class="k">new</span> <span class="n">btn</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+<span class="nl">private:</span>
+  <span class="n">MousePointer</span><span class="o">*</span> <span class="n">m_prototypeMousePointer</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+  <span class="n">Button</span><span class="o">*</span> <span class="n">m_prototypeButton</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">...</span>
+
+  <span class="n">UIPrototypeFactory</span> <span class="nf">uiFactory</span><span class="p">(</span><span class="n">OS_WIN</span><span class="p">);</span>
+
+  <span class="n">MousePointer</span><span class="o">*</span> <span class="n">myMpt</span> <span class="o">=</span> <span class="n">uiFactory</span><span class="o">-&gt;</span><span class="n">createMousePointer</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">});</span>
+  <span class="n">Button</span><span class="o">*</span> <span class="n">myBtn</span> <span class="o">=</span> <span class="n">uiFactory</span><span class="o">-&gt;</span><span class="n">createButton</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+</pre></table></code></div></div><h2 id="related-pattern"><span class="mr-2">Related Pattern</span><a href="#related-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p><em>Abstract Fatory Pattern</em>은 <em>Prototype</em>의 집합을 저장하다가 필요할 떄 복제하여 제품 객체를 반환하도록 사용 할 수도 있다.</p><p><em>Prototype Pattern</em>은 <em>Composite Pattern</em>과 <em>Decorator Pattern</em>을 많이 사용해야 하는 설계에서 유용하게 쓰인다.</p><hr /><hr /><p><em>참고</em>. Design Patterns : Elements of Reusable Object-Oriented Software - Erich Gamma</p><hr /></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/design-patterns/'>Design Patterns</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/design-patterns/" class="post-tag no-text-decoration" >Design Patterns</a> <a href="/tags/creational-patterns/" class="post-tag no-text-decoration" >Creational Patterns</a> <a href="/tags/prototype/" class="post-tag no-text-decoration" >Prototype</a> <a href="/tags/c/" class="post-tag no-text-decoration" >C++</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Design Patterns - Prototype - My Technical Diary&amp;url=https://issuh.github.io/posts/design_patterns-prototype/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Design Patterns - Prototype - My Technical Diary&amp;u=https://issuh.github.io/posts/design_patterns-prototype/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/design_patterns-prototype/&amp;text=Design Patterns - Prototype - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/design_patterns-abstract_factory/"><div class="card-body"> <em class="timeago small" data-ts="1586380560" > 2020-04-09 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Abstract Factory</h3><div class="text-muted small"><p> Creational Patterns - Abstract Factory Intent 상세화된 서브클래스를 정의하지 않고도 서로 관련성이 있거나 독립적인 여러 객체의 군을 생성하기 위한 인터페이스를 제공 Utility 객체가 생성되거나 구성, 표현되는 방식과 무관하게 시스템을 독립적으로 만들고자 할때 여러 제품들중 하나를 선택해서 시스템을...</p></div></div></a></div><div class="card"> <a href="/posts/design_patterns-builder/"><div class="card-body"> <em class="timeago small" data-ts="1586465520" > 2020-04-10 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Builder</h3><div class="text-muted small"><p> Creational Patterns - Builder Intent 복잡한 객체를 생성하는 방법과 표현하는 방법을 정의하는 클래스를 별도로 분리하여, 서로 다른 표현이라도 이를 생성할 수 있는 동일한 절차를 제공할수 있도록 함 Utility 복합 객체를 생성하는 알고리즘이 객체를 구성하는 요소 부분과 이들을 조립하는 방법에 독립적일 때 ...</p></div></div></a></div><div class="card"> <a href="/posts/design_patterns-factory_method/"><div class="card-body"> <em class="timeago small" data-ts="1586606640" > 2020-04-11 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Factory Method</h3><div class="text-muted small"><p> Creational Patterns - Factory Method Intent 객페를 생성하기 위해 인터페이스를 정의하지만, 어떤 클래스의 인스턴스를 생성할지에 대한 결정은 서브클래스가 하도록 한다. 때때로 Factory Method는 Virtual Constructor라고도 불린다. Utility 어떤 클래스가 자신이 생성해야 ...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/design_patterns-factory_method/" class="btn btn-outline-primary" prompt="Older"><p>Design Patterns - Factory Method</p></a> <a href="/posts/design_patterns-singleton/" class="btn btn-outline-primary" prompt="Newer"><p>Design Patterns - Singleton</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>

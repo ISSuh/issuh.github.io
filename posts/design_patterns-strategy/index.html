@@ -1,0 +1,289 @@
+<!DOCTYPE html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="Design Patterns - Strategy" /><meta property="og:locale" content="en" /><meta name="description" content="Behavioral Patterns - Strategy" /><meta property="og:description" content="Behavioral Patterns - Strategy" /><link rel="canonical" href="https://issuh.github.io/posts/design_patterns-strategy/" /><meta property="og:url" content="https://issuh.github.io/posts/design_patterns-strategy/" /><meta property="og:site_name" content="My Technical Diary" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2020-04-25T23:32:00+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="Design Patterns - Strategy" /><meta name="twitter:site" content="@twitter_username" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-03-05T12:33:07+09:00","datePublished":"2020-04-25T23:32:00+09:00","description":"Behavioral Patterns - Strategy","headline":"Design Patterns - Strategy","mainEntityOfPage":{"@type":"WebPage","@id":"https://issuh.github.io/posts/design_patterns-strategy/"},"url":"https://issuh.github.io/posts/design_patterns-strategy/"}</script><title>Design Patterns - Strategy | My Technical Diary</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="My Technical Diary"><meta name="application-name" content="My Technical Diary"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get MODE_ATTR() { return "data-mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_ATTR, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_ATTR); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc" data-topbar-visible="true"><div id="sidebar" class="d-flex flex-column align-items-end"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src=" /assets/img/profile.jpeg " alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">My Technical Diary</a></div><div class="site-subtitle font-italic">ISSuh's tech blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/aboutme/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT ME</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/ISSuh" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['yoyus5','naver.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>Design Patterns - Strategy</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>Design Patterns - Strategy</h1><div class="post-meta text-muted"><div> By <em> <a href="https://github.com/ISSuh">ISSuh</a> </em></div><div class="d-flex"><div> <span> Posted <em class="timeago" data-ts="1587825120" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2020-04-25 </em> </span> <span> Updated <em class="timeago" data-ts="1646451187" data-toggle="tooltip" data-placement="bottom" data-tooltip-df="llll" > 2022-03-05 </em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="2961 words"> <em>16 min</em> read</span></div></div></div><div class="post-content"><h1 id="behavioral-patterns---strategy">Behavioral Patterns - Strategy</h1><h2 id="intent"><span class="mr-2">Intent</span><a href="#intent" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p>동일 계열의 알고리즘군을 정의하고, 각 알고리즘을 캡슐화하며, 이들을 상호교환이 가능하도록 만든다.</p><p>알고리즘을 사용하는 클라이언트와 상관없이 독립적으로 알고리즘을 다양하게 변경할 수 있게 한다.</p><p>정책(Policy)이라고도 불린다.</p><h2 id="utility"><span class="mr-2">Utility</span><a href="#utility" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li>행동들이 조금씩 다를 뿐 개념적으로 관련된 많은 클래스들이 존재할 때<ul><li><em>Strategy Pattern</em>은 많은 행동 중 하나를 가진 클래스를 구성할 수 있는 방법을 제공한다.</ul><li>알고리즘의 변형이 필요할 때<ul><li>예를 들어, 기억공간과 처리속도 간의 절충에 따라 서로 다른 알고리즘을 정의할 수 있을 것이다. 이러한 변형물들이 알고리즘의 상속 관계로 구현될 떄 <em>Strategy Pattern</em>을 사용할 수 있을것이다.</ul><li>사용자가 몰라야 하는 데이터를 사용하는 알고리즘이 있을 떄<ul><li>노출하지 말아야 할 복잡한 자료구조는 <em>Strategy</em> 클래스에만 두면 되므로 사용자는 몰라도 된다.</ul><li>하나의 클래스가 많은 행동을 정의하고, 어떤 행동들이 그 클래스의 연산 안에서 복잡한 다중 조건문의 모습을 취할 때<ul><li>많은 조건문보다는 각각을 <em>Strategy</em> 클래스로 옮겨놓는 것이 좋다.</ul></ul><h2 id="structure"><span class="mr-2">Structure</span><a href="#structure" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><h3 id="basic-structure"><span class="mr-2">Basic Structure</span><a href="#basic-structure" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><img data-src="https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strategy.gif" alt="example" data-proofer-ignore></p><h3 id="structure-example"><span class="mr-2">Structure Example</span><a href="#structure-example" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><p><img data-src="https://www.cs.unc.edu/~stotts/GOF/hires/Pictures/strat011.gif" alt="example" data-proofer-ignore></p><h3 id="elements"><span class="mr-2">Elements</span><a href="#elements" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><strong>Strategy</strong><ul><li><em>Composite</em>에 해당<li>제공하는 모든 알고리즘에 대한 공통의 연산들은 인터페이스로 정의<li><em>Comtext</em> 클래스는 <em>ConcreteStrategy</em> 클래스에 정의한 힌터페이스를 통해서 실제 알고리즘을 사용</ul><li><strong>ConcreteStrategy</strong><ul><li><em>SimpleCompositer</em>, <em>TeXcompositor</em>, <em>ArrayCompositor</em>에 해당<li>인터페이스를 통해 실제 알고리즘을 구현</ul><li><strong>Context</strong><ul><li><em>Composition</em>에 해당<li><em>ConcreteStrategy</em> 객체를 통해 구성<li><em>Strategy</em> 객체에 대한 참조자를 관리하고, 실제로는 <em>Strategy</em> 서브클래스의 인스턴스를 가지고 있음으로써 구체화 함<li><em>Strategy</em> 객체가 자료에 접근해가는 데 필요한 인터페이스를 정의</ul></ul><h4 id="elements-communication"><span class="mr-2">Elements Communication</span><a href="#elements-communication" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy</em> 클래스와 <em>Context</em> 클래스는 의사교환을 통해 선택한 알고리즘을 구현한다. 즉, <em>Context</em> 클래스는 알고리즘에 해당하는 연산이 호출되면, 알고지름 처리에 필요한 모든 데이터를 <em>Strategy</em> 클래스로 보낸다. 이때, <em>Context</em> 객체 자체를 <em>Strategy</em> 연산에 인자로 전송할 수도 있다.</p><p><em>Context</em> 클래스는 사용자 쪽에서 온 요청을 각 <em>Strategy</em> 객체로 전달한다. 이를 위해 사용자는 필요한 알고리즘에 해당하는 <em>ConcreteStrategy</em> 객체를 생성하여 이를 <em>Context</em> 클래스에 전송하는데, 이 과정을 거치면 사용자는 <em>Context</em> 객체와 전달한 <em>ConcreteStrategy</em> 객체와 함께 동작한다.</p><h2 id="feature"><span class="mr-2">Feature</span><a href="#feature" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><h4 id="동일-계열의-관련-알고리즘군이-생긴다"><span class="mr-2">동일 계열의 관련 알고리즘군이 생긴다</span><a href="#동일-계열의-관련-알고리즘군이-생긴다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy</em> 클래스 계층은 동일 계열의 알고리즘군 혹은 행동군을 정의한다. 이러한 알고리즘 자체의 재사용도 가능하다. 즉, 상속을 통해 알고리즘 공통의 기능성들을 추출하고 이를 재사용 할 수 있다.</p><h4 id="서브클래싱을-사용하지-않는-대안이다"><span class="mr-2">서브클래싱을 사용하지 않는 대안이다</span><a href="#서브클래싱을-사용하지-않는-대안이다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>상속은 다양한 알고리즘이나 행동을 지원하는 또 다른 방법이다.</p><p>서로 다른 행동을 제공하기 위해 <em>Context</em> 클래스를 직접 상속받을 수도 있다. 그러나 이렇게 행동의 처리 방법을 <em>Context</em>에 직접 하드코딩하게 되면, 후에 수정이 어렵게 된다. 그러므로 다양한 알고리즘을 만들어 낼 수 없게된다.</p><p>알고리즘을 <em>Strategy</em> 클래스로 독립시키면 <em>Context</em>와 무관하게 알고리즘을 변형시킬수 있고, 알고리즘을 바꾸거나 이래하거나 확장하기도 쉬워진다.</p><h4 id="조건문을-없앨-수-있다"><span class="mr-2">조건문을 없앨 수 있다</span><a href="#조건문을-없앨-수-있다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy Pattern</em>을 사용하면 원하는 행동들을 선택하는 조건문을 없앨 수 있다.</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre><td class="rouge-code"><pre><span class="c1">// Strategy Pattern 미사용시 조건문을 통해 알고리즘을 선택한다</span>
+<span class="kt">void</span> <span class="n">Composittion</span><span class="o">::</span><span class="n">repair</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">switch</span><span class="p">(</span><span class="n">m_breakingStrategy</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">SimpleStrategy</span> <span class="p">:</span>
+    <span class="n">ComposeWithSimpleCompositor</span><span class="p">()</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">Texstrategy</span> <span class="p">:</span>
+    <span class="n">ComposeWithTexCompositor</span><span class="p">()</span>
+    <span class="k">break</span><span class="p">;</span>
+
+    <span class="p">...</span>
+
+  <span class="p">}</span>
+
+  <span class="c1">// 필요하다면 기존 복합으로 결과를 병합한다.</span>
+
+  <span class="p">...</span>
+
+<span class="p">}</span>
+</pre></table></code></div></div><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="c1">// Strategy Pattern 사용시 조건문이 필요없게 된다.</span>
+<span class="kt">void</span> <span class="n">Composittion</span><span class="o">::</span><span class="n">repair</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">m_compositor</span><span class="o">-&gt;</span><span class="n">compose</span><span class="p">();</span>
+
+  <span class="c1">// 필요하다면 기존 복합으로 결과를 병합한다.</span>
+
+  <span class="p">...</span>
+
+<span class="p">}</span>
+</pre></table></code></div></div><h4 id="구현의-선택이-가능하다"><span class="mr-2">구현의 선택이 가능하다</span><a href="#구현의-선택이-가능하다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>동일한 행동에 대하여 서로 다른 구현을 제공한다. 사용자는 서로 다른 시간과 공간이 필요한 여러 <em>Strategy</em>들 중 하나를 선택할 수 있다.</p><h4 id="사용자프로그램은-서로-다른-전략을-알아야-한다"><span class="mr-2">사용자(프로그램)은 서로 다른 전략을 알아야 한다</span><a href="#사용자프로그램은-서로-다른-전략을-알아야-한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>동일한 행동에 대하여 서로 다른 전략을 선택하기 전에 전략들이 어떻게 다른지 이해해야 한다. 즉, 사용자는 구현 내용을 모두 알고 있어야 하며, 사용자가 이렇게 서로 다른 행동 각각의 특징을 미리 알고 있을 때 <em>Strategy Pattern</em>을 사용할 수 있다.</p><h4 id="strategy-객체와-context-객체-사이에-의사소통-오버헤드가-있다"><span class="mr-2"><em>Strategy</em> 객체와 <em>Context</em> 객체 사이에 의사소통 오버헤드가 있다</span><a href="#strategy-객체와-context-객체-사이에-의사소통-오버헤드가-있다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>서브클래스에서 구현할 알고리즘의 복잡함과는 상관없이 모든 <em>ConcreteStrategy</em> 클래스는 <em>Strategy</em> 인터페이스를 공유한다. 따라서 어떤 <em>ConcreteStrategy</em> 클래스는 이 인터페이스를 통해 들어온 모든 정보를 다 사용하지 않는데도 이 정보를 떠안아야 할 경우가 생기게된다. 즉, 사용하지도 않을 매개변수를 <em>Context</em> 객체가 생성하고 초기화할 때도 있다는 말이 된다.</p><p>위와같은 상황이라면, <em>Strategy</em>와 <em>Context</em> 클래스 사이에 좀더 높은 결합도가 필요하게 된다.</p><h4 id="객체의-수가-증가한다"><span class="mr-2">객체의 수가 증가한다</span><a href="#객체의-수가-증가한다" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy</em>들로 인해 응용프로그램 내의 객체 수가 증가한다.</p><p>간혹, <em>Context</em> 객체들이 공유 가능한 상태 없는 객체로서 <em>Strategy</em>를 구현하여 불필요한 오버헤드를 줄일 수도 있다. 이때. 처리에 필요한 상태는 <em>Context</em> 클레스에서 관리한다. 공유한 <em>Strategy</em>들은 호출사이의 상태를 관리하지 말아야 한다.</p><p>이러한 방법을 더울 자세히 만든 것이 바로 <em>Flyweight Pattern</em> 이다.</p><h2 id="implementation"><span class="mr-2">Implementation</span><a href="#implementation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><h3 id="considerations-point-in-implementaion"><span class="mr-2">Considerations point in implementaion</span><a href="#considerations-point-in-implementaion" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><h4 id="strategy-및-context-인터페이스를-정의"><span class="mr-2"><em>Strategy</em> 및 <em>Context</em> 인터페이스를 정의</span><a href="#strategy-및-context-인터페이스를-정의" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy</em>와 <em>Context</em> 인터페이스는 <em>ConcreteStrategy</em>가 <em>Context</em>에서 어떠한 정보가 필요할 떄, 효율적으로 접근 가능해야 하고, 그 반대로 <em>Context</em>에서 <em>ConcreteStrategy</em>의 접근 또한 가능하도록 만들어져야 한다. 이러한 접근을 구현하기 위해 아래 두가지 방법이 있다.</p><ul><li><em>Context</em>가 <em>Strategy</em>의 연산 쪼으로 데이터를 매개변수에 담아 보내지도록 한다.<ul><li>데이터를 <em>Strategy</em>으로 보내는 것이다.<li><em>Strategy</em> 클래스와 <em>Context</em> 클래스 간의 결합도를 낮출수 있다.<li><em>Context</em>는 <em>Strategy</em>에 필요없는 데이터를 전달할 수도 있다.</ul><li><em>Context</em> 객체가 자기 자신을 <em>Strategy</em> 객체에 인자로 보내고, <em>Strategy</em> 객체는 <em>Context</em> 객체에서 데이터를 요청 하거나, <em>Strategy</em> 클래스는 <em>Context</em> 클래스에 대한 참조정보를 저장한다.<ul><li><em>Strategy</em> 객체가 <em>Context</em>에 정의된 인터페이스를 이용하여 정의한 정보들을 매번 얻어야 하기 때문에, <em>Context</em>는 데이터에 접근할 수 있는 인터페이스를 더욱이 정교하게 정의해야 한다.<li><em>Strategy</em> 클래스와 <em>Context</em> 클래스간 결합도가 높아진다.</ul></ul><h4 id="전략을-템플릿-매개변수로-사용"><span class="mr-2">전략을 템플릿 매개변수로 사용</span><a href="#전략을-템플릿-매개변수로-사용" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p>C++의 템플릿 기능을 사용하여 <em>Strategy</em>을 가진 클래스를 구성할 수 있다. 이 기법은 두가지 조건이 만족되어야만 적용가능하다.</p><ul><li><em>Strategy</em> 객체를 컴파일 타임에 결정할 수 있을 떄<li><em>Strategy</em> 객체가 런타임에 바꿀 필요가 없을 때</ul><p>두 조건이 만족하면, 구성할 클래스를 템플릿 클래스로 정의하고, <em>Strategy</em> 클래스 이 템플릿의 매개변수로 정의한다.</p><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre><td class="rouge-code"><pre><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">Astrategy</span><span class="p">&gt;</span>
+<span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">operate</span><span class="p">()</span> <span class="p">{</span> <span class="n">m_strategy</span><span class="p">.</span><span class="n">doAlgorithm</span><span class="p">();</span> <span class="p">}</span>
+
+  <span class="p">...</span>
+
+<span class="nl">private:</span>
+  <span class="n">Astrategy</span> <span class="n">m_strategy</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">MyStrategy</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="kt">void</span> <span class="n">doAlgorithm</span><span class="p">();</span>
+<span class="p">};</span>
+
+
+<span class="p">...</span>
+
+  <span class="n">Context</span><span class="o">&lt;</span><span class="n">MyStrategy</span><span class="o">&gt;</span> <span class="n">context</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+</pre></table></code></div></div><p>템플릿을 이용하면 <em>Strategy</em> 인터페이스를 정의하는 추상 클래스를 정의할 필요가 없게된다. <em>Strategy</em>를 템플릿의 매개변수로 사용하기 때문에 <em>Strategy</em>와 <em>Context</em>는 정적으로 바인딩됨으로써 효율이 증가하는 효과를 볼수 있게 된다.</p><h4 id="strategy-객체에-선택성을-부여"><span class="mr-2"><em>Strategy</em> 객체에 선택성을 부여</span><a href="#strategy-객체에-선택성을-부여" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4></h4><p><em>Strategy</em> 객체를 가지지 않는 편이 나을 때, <em>Context</em> 객체를 단순하게 만들 수도 있다.</p><p><em>Context</em>는 <em>Strategy</em> 객체가 접근하기 전 자신에게 <em>Strategy</em> 객체가 있는지를 확인한다. <em>Strategy</em> 객체가 있다면 그냥 그것을 사용하고, 없다면 기본 행동을 수행한다. 이 방법은 사용자가 기본 행동을 사용해도 무방하다면 <em>Strategy</em> 객체를 꼭 사용하지 않아도 된다는 이점이 있다.</p><h3 id="implement-example"><span class="mr-2">Implement Example</span><a href="#implement-example" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3></h3><div class="language-cpp highlighter-rouge"><div class="code-header"> <span data-label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+</pre><td class="rouge-code"><pre><span class="cm">/**
+* @brief Context - Container
+* @details 구현한 ConcreteStrategy를 선택하여 해당 객체가 가지는 알고리즘 동작
+*/</span>
+<span class="k">class</span> <span class="nc">Container</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">Container</span><span class="p">(</span><span class="n">Filter</span><span class="o">*</span> <span class="n">filter</span><span class="p">)</span> <span class="o">:</span> <span class="n">m_filter</span><span class="p">(</span><span class="n">Container</span><span class="p">)</span> <span class="p">{}</span>
+
+  <span class="c1">// 선택한 ConcreteStrategy의 알고리즘을 실행하는 인터페이스 정의 및 구현</span>
+  <span class="kt">void</span> <span class="n">separateData</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">m_filter</span><span class="o">-&gt;</span><span class="n">filtering</span><span class="p">(</span><span class="n">m_vec</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="p">...</span>
+
+<span class="nl">private:</span>
+  <span class="n">Filter</span><span class="o">*</span> <span class="n">m_filter</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">m_vec</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief Strategy - Filter
+* @details 구현할 알고리즘의 기본이 되는 인터페이스 정의
+*/</span>
+<span class="k">class</span> <span class="nc">Filter</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="c1">// ConcreteStrategy에서 구현해야할 알고리즘의 인터페이스 정의</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">filtering</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="nl">protected:</span>
+  <span class="n">Filter</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcreteStrategy - OddFilter
+* @details Strategy의 인터페이스를 구현하여 독자적인 알고리즘을 가짐
+*/</span>
+<span class="k">class</span> <span class="nc">OddFilter</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Filter</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">OddFilter</span><span class="p">();</span>
+
+  <span class="c1">// 자신만의 알고리즘 구현</span>
+  <span class="kt">void</span> <span class="n">filtering</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">vec</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">oddVec</span><span class="p">;</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">*</span> <span class="n">i</span> <span class="o">:</span> <span class="n">vec</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="n">i</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">oddVec</span><span class="p">.</span><span class="n">push_back</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">vec</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">oddVec</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">oddVec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">oddVec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+* @brief ConcreteStrategy - EvenFilter
+* @details Strategy의 인터페이스를 구현하여 독자적인 알고리즘을 가짐
+*/</span>
+<span class="k">class</span> <span class="nc">EvenFilter</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Filter</span> <span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="n">EvenFilter</span><span class="p">();</span>
+
+  <span class="c1">// 자신만의 알고리즘 구현</span>
+  <span class="kt">void</span> <span class="n">filtering</span><span class="p">()</span> <span class="k">override</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">evenVec</span><span class="p">;</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">*</span> <span class="n">i</span> <span class="o">:</span> <span class="n">vec</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="n">i</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">evenVec</span><span class="p">.</span><span class="n">push_back</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">vec</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">evenVec</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">evenVec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">evenVec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="p">...</span>
+
+  <span class="c1">// Context 객체 및 Strategy 선택</span>
+  <span class="n">Container</span><span class="o">*</span> <span class="n">oddContainer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Container</span><span class="p">(</span><span class="k">new</span> <span class="n">OddFilter</span><span class="p">());</span>  
+  <span class="n">Container</span><span class="o">*</span> <span class="n">evneContainer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Container</span><span class="p">(</span><span class="k">new</span> <span class="n">EvenFilter</span><span class="p">());</span>  
+
+  <span class="p">...</span>
+
+  <span class="c1">// 자신이 선택한 ConcreteStrategy의 알고리즘 실행</span>
+  <span class="n">oddContainer</span><span class="o">-&gt;</span><span class="n">separateData</span><span class="p">();</span>
+  <span class="n">evneContainer</span><span class="o">-&gt;</span><span class="n">separateData</span><span class="p">();</span>
+
+<span class="p">...</span>
+
+</pre></table></code></div></div><h2 id="related-pattern"><span class="mr-2">Related Pattern</span><a href="#related-pattern" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p><em>Strategy</em> 객체는 규모가 작은 클래스들이므로 <em>Flyweight Pattern</em>으로 정의하는것이 바람직하다.</p><hr /><hr /><p><em>참고</em>. Design Patterns : Elements of Reusable Object-Oriented Software - Erich Gamma</p><hr /></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/design-patterns/'>Design Patterns</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/design-patterns/" class="post-tag no-text-decoration" >Design Patterns</a> <a href="/tags/behavioral-patterns/" class="post-tag no-text-decoration" >Behavioral Patterns</a> <a href="/tags/strategy/" class="post-tag no-text-decoration" >Strategy</a> <a href="/tags/c/" class="post-tag no-text-decoration" >C++</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Design Patterns - Strategy - My Technical Diary&amp;url=https://issuh.github.io/posts/design_patterns-strategy/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Design Patterns - Strategy - My Technical Diary&amp;u=https://issuh.github.io/posts/design_patterns-strategy/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https://issuh.github.io/posts/design_patterns-strategy/&amp;text=Design Patterns - Strategy - My Technical Diary" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" data-title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recently Updated</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/educative-distributed-system-10/">Distributed Systems - Coordination Patterns</a><li><a href="/posts/educative-distributed-system-04/">Distributed Systems - CAP</a><li><a href="/posts/educative-distributed-system-03/">Distributed Systems - Replication</a><li><a href="/posts/my_project_simpledb/">simpleDB - 메모리</a><li><a href="/posts/ps-hackerrank-01/">HackerRandk - Fraudulent Activity Notifications</a></ul></div><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/design_patterns-chain_of_responsibility/"><div class="card-body"> <em class="timeago small" data-ts="1587403140" > 2020-04-21 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Chain of Responsibility</h3><div class="text-muted small"><p> Behavioral Patterns - Chain of Responsibility Intent 메세지를 보내는 객체와 이를 받아 처리하는 객체들 간의 결합도를 없애기 위한 패턴이다. 하나의 요청에 대한 처리가 반드시 한 객체에서만 되지 않고, 여러 객체에게 그 처리 기회를 주려는 것이다. Utility 하나 이상의 객체가 요청을 ...</p></div></div></a></div><div class="card"> <a href="/posts/design_patterns-command/"><div class="card-body"> <em class="timeago small" data-ts="1587504420" > 2020-04-22 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Command</h3><div class="text-muted small"><p> Behavioral Patterns - Command Intent 요청 자체를 캡슐화하는 것이다. 이를 통해 요청이 서로 다른 사용자를 매개변수로 만들고, 요청을 대기시키거나 로깅하여, 되돌릴 수 있는 연산을 지원한다. 작동(Action), 트랜젝션(Transaction) 이라고도 불린다. Utility 수행할 동작을 객체로 매개변수화...</p></div></div></a></div><div class="card"> <a href="/posts/design_patterns-iterator/"><div class="card-body"> <em class="timeago small" data-ts="1587591600" > 2020-04-23 </em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Design Patterns - Iterator</h3><div class="text-muted small"><p> Behavioral Patterns - Iterator Intent 내부 표현부를 노출하지 않고 어떤 집합 객체에 속한 원소들을 순차적으로 접근할수 있는 방법을 제공한다. 커서(Cursor)라고도 불린다. Utility 객체 내부 표현 방식으로 모르고도 집합 객체의 각 원소들에 접근하고 싶을 떄 집합 객체를 순회하는 다양한 ...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/design_patterns-state/" class="btn btn-outline-primary" prompt="Older"><p>Design Patterns - State</p></a> <a href="/posts/design_patterns-template_method/" class="btn btn-outline-primary" prompt="Newer"><p>Design Patterns - Template Method</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2024 <a href="https://github.com/ISSuh">ISSuh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Trending Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/ps/">PS</a> <a class="post-tag" href="/tags/leetcode/">Leetcode</a> <a class="post-tag" href="/tags/programmers/">Programmers</a> <a class="post-tag" href="/tags/spring-framework/">Spring Framework</a> <a class="post-tag" href="/tags/web/">Web</a> <a class="post-tag" href="/tags/c/">C++</a> <a class="post-tag" href="/tags/hash/">Hash</a> <a class="post-tag" href="/tags/database/">DataBase</a> <a class="post-tag" href="/tags/tree/">Tree</a> <a class="post-tag" href="/tags/array/">Array</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/lozad/dist/lozad.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.min.js,npm/dayjs@1/plugin/relativeTime.min.js,npm/dayjs@1/plugin/localizedFormat.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.bundle.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-157715138-1"></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-157715138-1'); }); </script>
